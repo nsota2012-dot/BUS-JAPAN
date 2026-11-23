@@ -85,6 +85,8 @@ body.touch #sig{bottom:calc(env(safe-area-inset-bottom,0px) + var(--pb) + var(--
 body.lampL [data-s=sigL],body.lampR [data-s=sigR],body.lampL.lampR [data-s=haz]{background:#ffae00!important;color:#000}
 #wt{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#fff;font:700 13px/1 system-ui,sans-serif;text-shadow:0 1px 2px #000;pointer-events:none}
 #shift [data-s=st2]{font-size:14px;min-width:72px}
+#tabs{display:flex;gap:6px;margin:8px 0}#tabs button{flex:1;padding:8px 0;font-size:16px;background:#345}#tabs button.on{background:#e8412c}
+.cr label{font-size:13px;display:block;margin-top:6px}.cr .tx{width:100%;box-sizing:border-box;font-size:14px;padding:6px;margin-top:6px}
 #cfg{position:fixed;z-index:1500;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
 #cfgBox{background:#fff;color:#222;border-radius:14px;padding:16px;width:min(92vw,440px);max-height:86vh;overflow:auto;touch-action:pan-y;-webkit-user-select:text;user-select:text}
 #cfgBox h2{margin:0 0 6px;font-size:18px}#cfgBox p{margin:0 0 10px;font-size:12px;color:#555;line-height:1.5}
@@ -108,7 +110,7 @@ body.lampL [data-s=sigL],body.lampR [data-s=sigR],body.lampL.lampR [data-s=haz]{
   <form id="f"><input id="q" placeholder="場所を検索（例：渋谷駅、東京タワー）" autocomplete="off"><button type="submit">検索</button><button type="button" id="geo">📍</button></form>
   <div id="res"></div>
   <div id="ctl">
-    <button data-s="doorF">前ドア閉</button><button data-s="doorR">後ドア閉</button><button data-s="view">🎥</button><button data-s="trans">AT</button><button data-s="cfg">⚙</button>
+    <button data-s="doorF">前ドア閉</button><button data-s="doorR">後ドア閉</button><button data-s="view">🎥</button><button data-s="trans">AT</button><button data-s="pre">♪1</button><button data-s="cfg">⚙</button>
   </div>
   <div id="hint"></div>
 </div>
@@ -122,7 +124,7 @@ body.lampL [data-s=sigL],body.lampR [data-s=sigR],body.lampL.lampR [data-s=haz]{
 </div>
 <div id="hud">
   <div class="ar" id="aL">◀</div>
-  <div><small id="gl">ALLISON</small><div id="gd">N</div></div>
+  <div><small id="gl">AT</small><div id="gd">N</div></div>
   <div id="spd"><span id="sv">0</span><small>km/h</small></div>
   <div id="rb"><span id="rv">700</span><small style="display:inline"> rpm</small><div id="rbar"><div id="rfill"></div></div></div>
   <div class="ar" id="aR">▶</div>
@@ -132,11 +134,11 @@ body.lampL [data-s=sigL],body.lampR [data-s=sigR],body.lampL.lampR [data-s=haz]{
   <div class="grp"><button class="k" data-k="down">■</button><button class="k" data-k="up">▲</button></div>
 </div>
 <div id="sig"><button data-s="pb">🅿</button><button data-s="sigL">◀</button><button data-s="haz">⚠</button><button data-s="sigR">▶</button></div>
-<div id="cfg"><div id="cfgBox"><h2>⚙ 効果音のカスタマイズ</h2><p>お好きな音声ファイル（mp3 / wav / m4a など、8MBまで）を選ぶと効果音を差し替えられます。ファイルはこの端末のブラウザ内にだけ保存され、アップロードはされません。</p><div id="cfgList"></div><button id="cfgClose" style="margin-top:10px;width:100%">閉じる</button></div></div>
+<div id="cfg"><div id="cfgBox"><h2>⚙ 効果音のカスタマイズ</h2><p>お好きな音声ファイル（mp3 / wav / m4a など、8MBまで）を選ぶと効果音を差し替えられます。1〜4のサウンドセットに別々に保存でき、上部の「♪」ボタンでも切り替えられます。ファイルはこの端末のブラウザ内にだけ保存され、アップロードはされません。</p><div id="tabs"></div><div id="cfgList"></div><button id="cfgClose" style="margin-top:10px;width:100%">閉じる</button></div></div>
 <div id="toast"></div>
 <div id="splash"><h1>🚌 バス運転ゲーム</h1>
   <p>ボタンを押すとエンジン音が有効になります。<br>iPhone / iPad は本体のマナーモード（サイレントスイッチ）を解除してください。</p>
-  <button id="go">スタート</button><p style="font-size:11px;opacity:.5">v6 車体9m/7m・AT/MTと車体を独立選択</p></div>
+  <button id="go">スタート</button><p style="font-size:11px;opacity:.5">v7 発車放送・サウンドセット1〜4・初期音ファイル化</p></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -144,7 +146,7 @@ const $=id=>document.getElementById(id);
 const ad=(a,b)=>((a-b+540)%360+360)%360-180;
 // ===== 車種 =====
 const VEH={
-  at:{name:'大型バス 9m（白×赤）',lab:'ALLISON',len:9,wid:2.7,hgt:3.0,r0:9,cyl:3,gmax:[14,26,42,60,80,100],acc:[2.6,2.1,1.6,1.2,.9,.65],rmax:10,racc:1.5},
+  at:{name:'大型バス 9m（白×赤）',lab:'AT',len:9,wid:2.7,hgt:3.0,r0:9,cyl:3,gmax:[14,26,42,60,80,100],acc:[2.6,2.1,1.6,1.2,.9,.65],rmax:10,racc:1.5},
   mt:{name:'中型バス 7m（黄×緑）',lab:'MT',len:7,wid:2.4,hgt:2.8,r0:7,cyl:2,gmax:[12,24,38,55,72,90],acc:[2.4,1.9,1.4,1.0,.75,.55],rmax:9,racc:1.4}
 };
 const IDLE=700;
@@ -243,13 +245,14 @@ function toggleDoor(k){
   door[k]=!door[k];$('door'+k).classList.toggle('open',door[k]);bus.classList.toggle('d'+k+'o',door[k]);
   const b=document.querySelector('[data-s=door'+k+']');b.classList.toggle('on',door[k]);
   b.textContent=(k==='F'?'前ドア':'後ドア')+(door[k]?'開':'閉');doorSound(k,door[k]);
+  clearTimeout(annT);if(!door[k]&&!door.F&&!door.R)annT=setTimeout(()=>playAnn(),1700);
 }
 
 // ===== 操作の割り当て =====
 const ACT={R:()=>setSel('R'),N:()=>setSel('N'),D:()=>setSel('D'),su:()=>shift(1),sd:()=>shift(-1),
   sigL:()=>setSig(-1),sigR:()=>setSig(1),haz:()=>setSig(2),doorF:()=>toggleDoor('F'),doorR:()=>toggleDoor('R'),
   view:()=>{vi=(vi+1)%VIEWS.length;applyView();toast('視点：'+VIEWS[vi].n);},
-  veh:()=>setVeh(cur==='at'?'mt':'at'),eng:toggleEngine,pb:togglePB,cfg:openCfg,trans:()=>setTrans(trans==='at'?'mt':'at'),st2:()=>toggleSt2(),
+  veh:()=>setVeh(cur==='at'?'mt':'at'),eng:toggleEngine,pb:togglePB,cfg:openCfg,pre:()=>cyclePreset(),trans:()=>setTrans(trans==='at'?'mt':'at'),st2:()=>toggleSt2(),
   snd:()=>{soundOn=!soundOn;$('snd').textContent=soundOn?'🔊':'🔇';},
   zi:()=>setZoom(zoom+1),zo:()=>setZoom(zoom-1),
   mode:()=>{mode=mode==='touch'?'pc':'touch';applyMode();toast(mode==='touch'?'タッチ操作モード':'キーボード操作モード');}};
@@ -358,12 +361,14 @@ function initAudio(){
     const n=AC.createBufferSource();n.buffer=nbuf;n.loop=true;const bp=AC.createBiquadFilter();bp.type='bandpass';bp.frequency.value=250;
     const ng=AC.createGain();ng.gain.value=.12;n.connect(bp).connect(ng).connect(mix);n.start();
     mix.connect(sh);sh.connect(flt);flt.connect(mg);mg.connect(comp);comp.connect(AC.destination);
+    makeDefaults();
   }catch(e){AC=null;}
 }
 function unlock(){
   if(!AC)initAudio();
   if(AC&&AC.state!=='running')AC.resume();
   if(AC&&!loaded){loaded=true;loadCustom();}
+  if(!ttsU&&'speechSynthesis' in window){ttsU=true;try{speechSynthesis.speak(new SpeechSynthesisUtterance(''));}catch(e){}}
 }
 ['touchend','click','pointerup','mousedown'].forEach(t=>addEventListener(t,unlock,{passive:true}));
 $('go').onclick=()=>{unlock();$('splash').style.display='none';const r=AC?AC.resume():null;Promise.resolve(r).then(()=>startEngine(true),()=>startEngine(true));};
@@ -489,7 +494,7 @@ addEventListener('pointermove',e=>{if(wId==='m')wMove(e.clientX,e.clientY);});
 addEventListener('pointerup',()=>{if(wId==='m')wId=null;});
 
 // ===== パーキングブレーキ =====
-function updLab(){const g=$('gl');g.textContent=(trans==='at'?'ALLISON':'MT')+(pb?' (P)':'');g.style.color=pb?'#f66':'';g.style.opacity=pb?1:'';}
+function updLab(){const g=$('gl');g.textContent=(trans==='at'?'AT':'MT')+(pb?' (P)':'');g.style.color=pb?'#f66':'';g.style.opacity=pb?1:'';}
 function togglePB(){
   pb=!pb;document.querySelector('[data-s=pb]').classList.toggle('on',pb);updLab();
   blip(true);setTimeout(()=>blip(false),90);toast(pb?'パーキングブレーキ ON':'パーキングブレーキ 解除');
@@ -515,41 +520,113 @@ function engStartSound(b){
   o.connect(f).connect(g).connect(AC.destination);o.start(t);o.stop(t+1.4);
 }
 
-// ===== カスタム効果音（端末のブラウザ内に保存） =====
-const SLOTS=[['doorFOpen','前ドア 開ける音'],['doorFClose','前ドア 閉める音'],['doorROpen','後ろドア 開ける音'],['doorRClose','後ろドア 閉める音'],['engStart','エンジン始動音']];
-const custom={},meta={};let loaded=false;
+// ===== カスタム効果音（サウンドセット1〜4・端末のブラウザ内に保存） =====
+const SLOTS=[['doorFOpen','前ドア 開ける音'],['doorFClose','前ドア 閉める音'],['doorROpen','後ろドア 開ける音'],['doorRClose','後ろドア 閉める音'],['ann','発車放送（ドアが閉まった後）'],['engStart','エンジン始動音']];
+const custom={},meta={},defBuf={},defRaw={};let loaded=false,annT=null,ttsU=false,preset=1;
+try{preset=Math.max(1,Math.min(4,+localStorage.getItem('busPreset')||1));}catch(e){}
+const pk=id=>'p'+preset+':'+id;
+const ANN_DEF='発車します。お近くの手すり、つり革におつかまりください。';
 function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('busgame',1);r.onupgradeneeded=()=>r.result.createObjectStore('snd');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
 async function dbOp(m,fn){const d=await idb();return new Promise((res,rej)=>{const tx=d.transaction('snd',m),rq=fn(tx.objectStore('snd'));tx.oncomplete=()=>res(rq&&rq.result);tx.onerror=()=>rej(tx.error);});}
 const dec=ab=>new Promise((res,rej)=>AC.decodeAudioData(ab,res,rej));
 async function loadCustom(){
-  try{for(const [id] of SLOTS){const r=await dbOp('readonly',st=>st.get(id));if(r){custom[id]=await dec(r.data.slice(0));meta[id]=r.name;}}}catch(e){}
+  for(const k in custom)delete custom[k];for(const k in meta)delete meta[k];
+  try{for(const [id] of SLOTS){
+    let r=await dbOp('readonly',st=>st.get(pk(id)));
+    if(!r&&preset===1)r=await dbOp('readonly',st=>st.get(id));
+    if(r){custom[id]=await dec(r.data.slice(0));meta[id]=r.name;}
+  }}catch(e){}
   refreshCfg();
 }
 function playBuf(b){if(!AC||AC.state!=='running'||!soundOn)return;const s=AC.createBufferSource();s.buffer=b;s.connect(AC.destination);s.start();}
-function doorSound(k,open){const b=custom['door'+k+(open?'Open':'Close')];b?playBuf(b):whoosh(open);}
+function doorSound(k,open){const b=custom['door'+k+(open?'Open':'Close')]||defBuf[open?'open':'close'];b?playBuf(b):whoosh(open);}
+function annCfg(){let a={};try{a=JSON.parse(localStorage.getItem('busAnn'))||{};}catch(e){}return Object.assign({on:true,text:ANN_DEF},a[preset]);}
+function annSave(c){let a={};try{a=JSON.parse(localStorage.getItem('busAnn'))||{};}catch(e){}a[preset]=c;try{localStorage.setItem('busAnn',JSON.stringify(a));}catch(e){}}
+function playAnn(force){
+  const c=annCfg();if(!soundOn||(!c.on&&!force))return;
+  if(custom.ann)return playBuf(custom.ann);
+  if(defBuf.ann)playBuf(defBuf.ann);
+  if('speechSynthesis' in window&&c.text){try{const u=new SpeechSynthesisUtterance(c.text);u.lang='ja-JP';u.rate=.95;setTimeout(()=>{speechSynthesis.cancel();speechSynthesis.speak(u);},1100);}catch(e){}}
+}
+// --- 初期音（内蔵の音声ファイル相当。WAVとして書き出し可能） ---
+function norm(d,pk_){let m=0;for(let i=0;i<d.length;i++)m=Math.max(m,Math.abs(d[i]));if(m>0)for(let i=0;i<d.length;i++)d[i]*=pk_/m;return d;}
+function genWhoosh(open){
+  const sr=44100,n=Math.floor(sr*(open?.9:1.05)),d=new Float32Array(n);let low=0,band=0;
+  for(let i=0;i<n;i++){
+    const t=i/sr,pr=Math.min(1,t/.7),f=open?2500*Math.pow(700/2500,pr):700*Math.pow(2500/700,pr);
+    const env=t<.05?t/.05:Math.exp(-(t-.05)*3.2),F=2*Math.sin(Math.PI*f/sr),x=Math.random()*2-1;
+    low+=F*band;const hi=x-low-.35*band;band+=F*hi;d[i]=band*env;
+  }
+  norm(d,.55);
+  if(open){for(let i=0;i<sr*.03;i++)d[i]+=(Math.random()*2-1)*Math.exp(-i/(sr*.006))*.35;}
+  else{for(let i=0;i<sr*.3;i++){const t=i/sr,k=Math.floor(sr*.65)+i;if(k>=n)break;d[k]+=Math.sin(2*Math.PI*(90-50*t/.3)*t)*Math.exp(-t*14)*.6;}}
+  return d;
+}
+function genChime(){
+  const sr=44100,n=Math.floor(sr*1.3),d=new Float32Array(n);
+  const note=(f,t0,len)=>{for(let i=0;i<len*sr;i++){const t=i/sr,k=Math.floor(t0*sr)+i;if(k>=n)break;const e=Math.min(1,t/.01)*Math.exp(-t*4.5);d[k]+=e*(Math.sin(2*Math.PI*f*t)+.3*Math.sin(4*Math.PI*f*t)+.1*Math.sin(6*Math.PI*f*t));}};
+  note(880,0,.6);note(660,.4,.85);return norm(d,.6);
+}
+function makeDefaults(){
+  defRaw.open=genWhoosh(true);defRaw.close=genWhoosh(false);defRaw.ann=genChime();
+  for(const k in defRaw){const b=AC.createBuffer(1,defRaw[k].length,44100);b.getChannelData(0).set(defRaw[k]);defBuf[k]=b;}
+}
+function wavBlob(f,sr){
+  const n=f.length,buf=new ArrayBuffer(44+n*2),v=new DataView(buf),w=(o,t)=>{for(let i=0;i<t.length;i++)v.setUint8(o+i,t.charCodeAt(i));};
+  w(0,'RIFF');v.setUint32(4,36+n*2,true);w(8,'WAVEfmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
+  v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*2,true);
+  for(let i=0;i<n;i++)v.setInt16(44+i*2,Math.max(-1,Math.min(1,f[i]))*32767,true);
+  return new Blob([buf],{type:'audio/wav'});
+}
+function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);}
+// --- サウンドセット ---
+function updPreTxt(){const b=document.querySelector('[data-s=pre]');if(b)b.textContent='♪'+preset;}
+async function switchPreset(n){
+  unlock();preset=n;try{localStorage.setItem('busPreset',n);}catch(e){}
+  updPreTxt();await loadCustom();toast('サウンドセット '+n+' に切替');
+}
+function cyclePreset(){switchPreset(preset%4+1);}
+// --- 設定画面 ---
 function openCfg(){refreshCfg();$('cfg').style.display='flex';}
 $('cfgClose').onclick=()=>$('cfg').style.display='none';
 function refreshCfg(){
+  const tabs=$('tabs');tabs.innerHTML='';
+  for(let n=1;n<=4;n++){const b=document.createElement('button');b.textContent=n;b.className=n===preset?'on':'';b.onclick=()=>switchPreset(n);tabs.append(b);}
   const box=$('cfgList');box.innerHTML='';
   SLOTS.forEach(([id,name])=>{
     const row=document.createElement('div');row.className='cr';
-    row.innerHTML='<b>'+name+'</b><small>'+(custom[id]?'設定済み：'+meta[id]+'（'+custom[id].duration.toFixed(1)+'秒）':'初期音（内蔵）')+'</small>';
+    const dk=id==='ann'?'ann':/Open$/.test(id)?'open':/Close$/.test(id)?'close':null;
+    const dn=dk==='ann'?'announce_chime.wav':dk==='open'?'door_open.wav':dk==='close'?'door_close.wav':null;
+    const st=custom[id]?'設定済み：'+meta[id]+'（'+custom[id].duration.toFixed(1)+'秒）':dn?'初期音：'+dn+'（内蔵）':'初期音（始動時に自動生成）';
+    row.innerHTML='<b>'+name+'</b><small>'+st+'</small>';
     const inp=document.createElement('input');inp.type='file';inp.accept='audio/*';
     inp.onchange=async()=>{
       const f=inp.files[0];if(!f)return;unlock();
       if(!AC)return toast('この環境では音声を使えません');
       if(f.size>8e6)return toast('8MB以下のファイルにしてください');
       try{const data=await f.arrayBuffer(),buf=await dec(data.slice(0));custom[id]=buf;meta[id]=f.name;
-        try{await dbOp('readwrite',st=>st.put({name:f.name,data},id));}catch(e){}
-        toast('「'+name+'」を設定しました');
+        try{await dbOp('readwrite',s=>s.put({name:f.name,data},pk(id)));}catch(e){}
+        toast('セット'+preset+'「'+name+'」を設定しました');
       }catch(e){toast('読み込めない音声ファイルです（mp3 / wav / m4a など）');}
       refreshCfg();
     };
     const t=document.createElement('button');t.textContent='▶ 試聴';
-    t.onclick=()=>{unlock();const m=/^door([FR])(Open|Close)$/.exec(id);m?doorSound(m[1],m[2]==='Open'):engStartSound(custom.engStart);};
+    t.onclick=()=>{unlock();const m=/^door([FR])(Open|Close)$/.exec(id);m?doorSound(m[1],m[2]==='Open'):id==='ann'?playAnn(true):engStartSound(custom.engStart);};
     const r=document.createElement('button');r.textContent='初期に戻す';
-    r.onclick=async()=>{delete custom[id];delete meta[id];try{await dbOp('readwrite',st=>st.delete(id));}catch(e){}refreshCfg();};
-    const w=document.createElement('div');w.className='cb2';w.append(inp,t,r);row.append(w);box.append(row);
+    r.onclick=async()=>{delete custom[id];delete meta[id];try{await dbOp('readwrite',s=>s.delete(pk(id)));if(preset===1)await dbOp('readwrite',s=>s.delete(id));}catch(e){}refreshCfg();};
+    const w=document.createElement('div');w.className='cb2';w.append(inp,t,r);
+    if(dn){const sv=document.createElement('button');sv.textContent='💾 初期音を保存';sv.onclick=()=>{unlock();if(defRaw[dk])download(wavBlob(defRaw[dk],44100),dn);else toast('先にゲームを開始してください');};w.append(sv);}
+    row.append(w);
+    if(id==='ann'){
+      const c=annCfg(),lb=document.createElement('label'),cb=document.createElement('input');
+      cb.type='checkbox';cb.checked=c.on;cb.onchange=()=>{const x=annCfg();x.on=cb.checked;annSave(x);};
+      lb.append(cb,' ドアが閉まったら発車放送を流す');
+      const tx=document.createElement('input');tx.type='text';tx.className='tx';tx.value=c.text;tx.placeholder='初期放送の読み上げ文';
+      tx.onchange=()=>{const x=annCfg();x.text=tx.value;annSave(x);};
+      const nt=document.createElement('small');nt.textContent='初期放送＝チャイム＋読み上げ（端末の音声合成）。音声ファイルを設定した場合は、そのファイルだけを流します。';
+      row.append(lb,tx,nt);
+    }
+    box.append(row);
   });
 }
 
@@ -572,7 +649,7 @@ function toggleSt2(){
   toast(start2?(trans==='at'?'2速発進 ON（Dで2速から発進）':'2速発進 ON（MT：2速発進アシスト）'):'2速発進 OFF');
 }
 
-setVeh('at');engineOn=false;rpm=0;applyMode();applyView();requestAnimationFrame(tick);
+updPreTxt();setVeh('at');engineOn=false;rpm=0;applyMode();applyView();requestAnimationFrame(tick);
 </script>
 </body>
 </html>
