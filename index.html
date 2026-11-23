@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>バス運転ゲーム</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#111;font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif;-webkit-user-select:none;user-select:none;touch-action:none}
+#map{position:absolute;inset:0;background:#222}
+#bus{--bd:#f4f4f4;--st:#e8412c;position:fixed;left:50%;top:50%;z-index:900;pointer-events:none;will-change:transform}
+#bus.mt{--bd:#fff1b8;--st:#1b8a4a}
+#bus svg{width:100%;height:100%;filter:drop-shadow(2px 4px 5px rgba(0,0,0,.55))}
+.bd{fill:var(--bd)}.st{fill:var(--st)}
+#top{position:fixed;z-index:1000;top:0;left:0;right:62px;padding:calc(env(safe-area-inset-top,0px) + 8px) 0 0 8px;display:flex;flex-direction:column;gap:6px;max-width:520px}
+#top form{display:flex;gap:6px}
+#q{flex:1;min-width:0;font-size:16px;padding:10px 12px;border:0;border-radius:10px;background:rgba(255,255,255,.95);-webkit-user-select:text;user-select:text}
+button{font:inherit;border:0;border-radius:10px;padding:10px 12px;background:rgba(20,30,45,.85);color:#fff;cursor:pointer}
+button:active,button.on{background:#e8412c}
+#res{background:rgba(255,255,255,.96);border-radius:10px;overflow:hidden;display:none}
+#res div{padding:10px 12px;font-size:14px;color:#222;border-bottom:1px solid #ddd;cursor:pointer}
+#res div:last-child{border:0}
+#hint{color:#fff;font-size:12px;text-shadow:0 1px 3px #000,0 0 6px #000}
+#side{position:fixed;z-index:1000;right:8px;top:calc(env(safe-area-inset-top,0px) + 8px);display:flex;flex-direction:column;gap:6px}
+#side button{width:46px;padding:10px 0;font-size:18px}
+#hud{position:fixed;z-index:1000;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 10px);display:flex;gap:8px;align-items:stretch;pointer-events:none;color:#fff}
+#hud>div{background:rgba(20,30,45,.88);border-radius:12px;padding:4px 10px;text-align:center}
+#hud small{display:block;font-size:10px;opacity:.7;letter-spacing:.1em}
+#gd{font:700 30px/1.1 ui-monospace,Menlo,Consolas,monospace;color:#ffb000;background:#000;border-radius:6px;padding:0 8px;min-width:50px;text-shadow:0 0 8px #ff8c00;border:2px solid #444}
+#spd{font-size:24px;font-weight:700;min-width:84px}
+#spd small{display:inline;font-size:11px;margin-left:3px}
+#rb{width:78px;font-size:13px}
+#rbar{height:8px;background:#333;border-radius:4px;overflow:hidden;margin-top:4px}
+#rfill{height:100%;width:0;background:#6c6}
+#shift{position:fixed;z-index:1000;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 82px)}
+body.touch #shift{bottom:calc(env(safe-area-inset-bottom,0px) + 170px)}
+#shift>div{display:none;gap:8px}
+#shift button{min-width:56px;height:48px;font-size:18px;font-weight:700;background:rgba(20,30,45,.78);border:2px solid rgba(255,255,255,.55);touch-action:none}
+#pad{position:fixed;z-index:1000;left:0;right:0;bottom:0;padding:0 14px calc(env(safe-area-inset-bottom,0px) + 76px);display:none;justify-content:space-between;pointer-events:none}
+#pad .grp{display:flex;gap:14px;pointer-events:auto}
+#pad .k{width:84px;height:84px;border-radius:50%;font-size:34px;padding:0;background:rgba(20,30,45,.55);border:2px solid rgba(255,255,255,.6);touch-action:none}
+.k.on,#shift button.on{background:rgba(232,65,44,.9)}
+#toast{position:fixed;z-index:1100;top:42%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.82);color:#fff;padding:10px 16px;border-radius:10px;display:none;font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="bus"><svg viewBox="0 0 30 100" preserveAspectRatio="none">
+<rect class="bd" x="2" y="1" width="26" height="98" rx="6"/>
+<rect x="4" y="9" width="22" height="82" rx="3" fill="#e6ecf1" stroke="#b6c1cb" stroke-width=".6"/>
+<rect class="st" x="14" y="12" width="2" height="76"/>
+<rect x="8.5" y="28" width="13" height="10" rx="1" fill="#c6d0d8"/><rect x="8.5" y="54" width="13" height="10" rx="1" fill="#c6d0d8"/>
+<path d="M5 3.5H25L24 9H6Z" fill="#2b3a4a"/><rect x="7" y="92" width="16" height="4" rx="1" fill="#2b3a4a"/>
+<rect x="0" y="12" width="3" height="5" rx="1" fill="#333"/><rect x="27" y="12" width="3" height="5" rx="1" fill="#333"/>
+<circle cx="6" cy="1.8" r="1.5" fill="#ffe27a"/><circle cx="24" cy="1.8" r="1.5" fill="#ffe27a"/>
+<rect x="4" y="98" width="5" height="1.5" fill="#d22"/><rect x="21" y="98" width="5" height="1.5" fill="#d22"/>
+</svg></div>
+
+<div id="top">
+  <form id="f"><input id="q" placeholder="場所を検索（例：渋谷駅、東京タワー）" autocomplete="off"><button type="submit">検索</button><button type="button" id="geo">📍</button></form>
+  <div id="res"></div>
+  <div id="hint"></div>
+</div>
+<div id="side">
+  <button id="mode" title="操作切替">📱</button>
+  <button id="veh" title="車種切替">🚌</button>
+  <button id="eng" title="エンジン始動/停止">🔑</button>
+  <button id="snd" title="音">🔊</button>
+  <button id="zi">＋</button>
+  <button id="zo">－</button>
+</div>
+<div id="shift">
+  <div id="atsel"><button data-s="R">R</button><button data-s="N">N</button><button data-s="D">D</button></div>
+  <div id="mtsel"><button data-s="down">▼</button><button data-s="up">▲</button><button data-k="clutch">クラッチ</button></div>
+</div>
+<div id="hud">
+  <div><small id="gl">ALLISON</small><div id="gd">N</div></div>
+  <div id="spd"><span id="sv">0</span><small>km/h</small></div>
+  <div id="rb"><span id="rv">700</span><small style="display:inline"> rpm</small><div id="rbar"><div id="rfill"></div></div></div>
+</div>
+<div id="pad">
+  <div class="grp"><button class="k" data-k="left">◀</button><button class="k" data-k="right">▶</button></div>
+  <div class="grp"><button class="k" data-k="down">■</button><button class="k" data-k="up">▲</button></div>
+</div>
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+// ===== 車種 =====
+const VEH={
+  at:{name:'ALLISON AT バス（6速オートマ）',lab:'ALLISON',len:12,wid:3,r0:11,cyl:3,gmax:[14,26,42,60,80,100],acc:[2.6,2.1,1.6,1.2,.9,.65],rmax:10,racc:1.5},
+  mt:{name:'MT バス（6速マニュアル）',lab:'MT',len:9,wid:2.6,r0:8,cyl:2,gmax:[12,24,38,55,72,90],acc:[2.4,1.9,1.4,1.0,.75,.55],rmax:9,racc:1.4}
+};
+const IDLE=700;
+let cur='at', sel='N', ag=1, gear=0, shiftT=0, cl=0, bl=0, rpm=IDLE, engineOn=true, stallT=0, soundOn=true;
+let pos={lat:35.6595,lng:139.7005}, heading=0, v=0, steer=0, zoom=19;
+const keys={up:false,down:false,left:false,right:false,brake:false,clutch:false};
+let mode='touch';
+try{mode=localStorage.getItem('busMode')||(matchMedia('(pointer:coarse)').matches?'touch':'pc');}catch(e){mode=matchMedia('(pointer:coarse)').matches?'touch':'pc';}
+
+// ===== 地図（Google衛星画像） =====
+const map=L.map('map',{zoomControl:false,dragging:false,scrollWheelZoom:false,touchZoom:false,doubleClickZoom:false,boxZoom:false,keyboard:false,zoomAnimation:false,fadeAnimation:false,markerZoomAnimation:false,attributionControl:false});
+L.tileLayer('https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{subdomains:'0123',maxNativeZoom:20,maxZoom:21,keepBuffer:4}).addTo(map);
+map.setView([pos.lat,pos.lng],zoom,{animate:false});
+
+const bus=$('bus');
+function sizeBus(){
+  const V=VEH[cur], mpp=156543.03392*Math.cos(pos.lat*Math.PI/180)/Math.pow(2,zoom);
+  const L_=V.len/mpp, W=V.wid/mpp;
+  bus.style.width=W+'px';bus.style.height=L_+'px';bus.style.marginLeft=(-W/2)+'px';bus.style.marginTop=(-L_/2)+'px';
+}
+function setZoom(z){zoom=Math.max(16,Math.min(21,z));sizeBus();}
+function toast(t){const el=$('toast');el.textContent=t;el.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>el.style.display='none',1800);}
+
+// ===== ギア操作 =====
+const MT_SEQ=[-1,0,1,2,3,4,5,6];
+function pickGear(){const vk=Math.abs(v)*3.6;for(let g=1;g<=6;g++)if(vk/VEH.at.gmax[g-1]*2400<1800)return g;return 6;}
+function setSel(s){
+  if(cur!=='at')return;
+  if(s==='R'&&v>1.4)return toast('停止してからR（後退）に入れてください');
+  if(s==='D'&&v<-1.4)return toast('停止してからD（前進）に入れてください');
+  sel=s;if(s==='D'){ag=pickGear();shiftT=.5;}updSel();
+}
+function setMT(n){
+  if(n===gear)return;
+  if(n!==0&&cl<.6)return toast('クラッチを踏んでからシフト！');
+  gear=n;
+}
+function shift(d){
+  if(cur==='at'){const o=['R','N','D'];setSel(o[Math.max(0,Math.min(2,o.indexOf(sel)+d))]);}
+  else setMT(MT_SEQ[Math.max(0,Math.min(7,MT_SEQ.indexOf(gear)+d))]);
+}
+function updSel(){document.querySelectorAll('#atsel button').forEach(b=>b.classList.toggle('on',b.dataset.s===sel));}
+function toggleEngine(){
+  if(engineOn){engineOn=false;toast('エンジン停止');return;}
+  if(cur==='at'&&sel!=='N')return toast('N（ニュートラル）で始動してください');
+  if(cur==='mt'&&gear!==0&&cl<.6)return toast('ニュートラルか、クラッチを踏んで始動');
+  engineOn=true;rpm=IDLE;toast('エンジン始動');
+}
+function setVeh(k){
+  cur=k;v=0;sel='N';gear=0;ag=1;cl=0;engineOn=true;rpm=IDLE;
+  bus.className=k;$('gl').textContent=VEH[k].lab;
+  $('atsel').style.display=k==='at'?'flex':'none';$('mtsel').style.display=k==='mt'?'flex':'none';
+  sizeBus();updSel();toast(VEH[k].name);
+}
+$('veh').onclick=()=>setVeh(cur==='at'?'mt':'at');
+$('eng').onclick=toggleEngine;
+$('snd').onclick=()=>{soundOn=!soundOn;$('snd').textContent=soundOn?'🔊':'🔇';};
+
+// ===== 入力 =====
+const kmap={ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Space:'brake',ShiftLeft:'clutch',ShiftRight:'clutch'};
+addEventListener('keydown',e=>{
+  initAudio();
+  if(mode!=='pc'||document.activeElement.tagName==='INPUT')return;
+  const k=kmap[e.code];if(k){keys[k]=true;e.preventDefault();return;}
+  if(e.repeat)return;
+  const c=e.code;
+  if(c==='KeyE')shift(1);else if(c==='KeyQ')shift(-1);
+  else if(c==='KeyZ'){cur==='at'?setSel('R'):setMT(-1);}
+  else if(c==='KeyX'){cur==='at'?setSel('N'):setMT(0);}
+  else if(c==='KeyC'&&cur==='at')setSel('D');
+  else if(cur==='mt'&&/^Digit[1-6]$/.test(c))setMT(+c[5]);
+  else if(c==='Enter')toggleEngine();
+});
+addEventListener('keyup',e=>{const k=kmap[e.code];if(k)keys[k]=false;});
+addEventListener('pointerdown',initAudio);
+document.querySelectorAll('[data-k]').forEach(b=>{
+  const k=b.dataset.k;
+  b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);keys[k]=true;b.classList.add('on');});
+  const off=()=>{keys[k]=false;b.classList.remove('on');};
+  ['pointerup','pointercancel','lostpointercapture'].forEach(t=>b.addEventListener(t,off));
+  b.addEventListener('contextmenu',e=>e.preventDefault());
+});
+document.querySelectorAll('[data-s]').forEach(b=>b.addEventListener('pointerdown',e=>{
+  e.preventDefault();const s=b.dataset.s;
+  if(s==='up')shift(1);else if(s==='down')shift(-1);else setSel(s);
+}));
+function applyMode(){
+  for(const k in keys)keys[k]=false;
+  $('pad').style.display=mode==='touch'?'flex':'none';
+  document.body.classList.toggle('touch',mode==='touch');
+  $('mode').textContent=mode==='touch'?'📱':'⌨️';
+  $('hint').textContent=mode==='touch'?'左：ハンドル／右：■ブレーキ ▲アクセル／中央：シフト':'↑↓ アクセル/ブレーキ ←→ ハンドル Space 駐車ブレーキ | AT: Z=R X=N C=D | MT: Shift=クラッチ Q/E or 1-6 シフト | Enter=始動';
+  try{localStorage.setItem('busMode',mode);}catch(e){}
+}
+$('mode').onclick=()=>{mode=mode==='touch'?'pc':'touch';applyMode();toast(mode==='touch'?'タッチ操作モード':'キーボード操作モード');};
+$('zi').onclick=()=>setZoom(zoom+1);$('zo').onclick=()=>setZoom(zoom-1);
+
+// ===== 検索 =====
+const res=$('res');
+function place(lat,lng,name){
+  pos={lat:+lat,lng:+lng};v=0;steer=0;res.style.display='none';
+  sizeBus();map.setView([pos.lat,pos.lng],zoom,{animate:false});
+  if(name)toast('📍 '+name.split(',').slice(0,2).join(','));$('q').blur();
+}
+$('f').addEventListener('submit',async e=>{
+  e.preventDefault();const q=$('q').value.trim();if(!q)return;
+  try{
+    const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=6&accept-language=ja&q='+encodeURIComponent(q));
+    const list=await r.json();res.innerHTML='';
+    if(!list.length)res.innerHTML='<div>見つかりませんでした</div>';
+    list.forEach(it=>{const d=document.createElement('div');d.textContent=it.display_name;d.onclick=()=>place(it.lat,it.lon,it.display_name);res.appendChild(d);});
+    res.style.display='block';
+  }catch(err){toast('検索に失敗しました（ネット接続を確認）');}
+});
+$('geo').onclick=()=>{
+  if(!navigator.geolocation)return toast('位置情報が使えません');
+  navigator.geolocation.getCurrentPosition(p=>place(p.coords.latitude,p.coords.longitude,'現在地'),()=>toast('現在地を取得できませんでした'));
+};
+
+// ===== エンジン音（Web Audio） =====
+let AC,o1,o2,o3,flt,mg,ng;
+function initAudio(){
+  if(AC){if(AC.state==='suspended')AC.resume();return;}
+  try{
+    AC=new(window.AudioContext||window.webkitAudioContext)();
+    mg=AC.createGain();mg.gain.value=0;flt=AC.createBiquadFilter();flt.type='lowpass';flt.frequency.value=500;flt.Q.value=2;
+    o1=AC.createOscillator();o1.type='sawtooth';o2=AC.createOscillator();o2.type='square';o3=AC.createOscillator();o3.type='sawtooth';
+    const g1=AC.createGain(),g2=AC.createGain(),g3=AC.createGain();g1.gain.value=.5;g2.gain.value=.3;g3.gain.value=.15;
+    o1.connect(g1).connect(flt);o2.connect(g2).connect(flt);o3.connect(g3).connect(flt);
+    const buf=AC.createBuffer(1,AC.sampleRate,AC.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+    const n=AC.createBufferSource();n.buffer=buf;n.loop=true;const bp=AC.createBiquadFilter();bp.type='bandpass';bp.frequency.value=220;
+    ng=AC.createGain();ng.gain.value=.15;n.connect(bp).connect(ng).connect(flt);
+    flt.connect(mg).connect(AC.destination);o1.start();o2.start();o3.start();n.start();
+  }catch(e){AC=null;}
+}
+function updAudio(thr){
+  if(!AC)return;const t=AC.currentTime,f=Math.max(8,rpm/60*VEH[cur].cyl);
+  o1.frequency.setTargetAtTime(f,t,.04);o2.frequency.setTargetAtTime(f*.5,t,.04);o3.frequency.setTargetAtTime(f*2.01,t,.04);
+  flt.frequency.setTargetAtTime(380+rpm*.5+thr*500,t,.08);
+  const on=engineOn&&soundOn&&rpm>150;
+  mg.gain.setTargetAtTime(on?.16+.2*thr+rpm/2400*.12:0,t,.08);
+}
+
+// ===== ゲームループ =====
+let last=performance.now(),lastG='',lastS='';
+function tick(t){
+  const dt=Math.min(.05,(t-last)/1000);last=t;
+  const V=VEH[cur],AT=cur==='at';
+  const thr=(keys.up&&engineOn)?1:0;
+  bl+=((keys.down?1:0)-bl)*Math.min(1,dt*(keys.down?4:12));
+  if(AT)cl=0;else{cl+=keys.clutch?6*dt:-1.6*dt;cl=Math.max(0,Math.min(1,cl));}
+  const e=AT?1:1-cl;
+  // 有効ギア
+  let eg;
+  if(AT){
+    if(sel==='D'){
+      shiftT-=dt;
+      if(shiftT<=0&&engineOn){
+        const wr=Math.max(0,v)*3.6/V.gmax[ag-1]*2400;
+        if(ag<6&&wr>1600+thr*600){ag++;shiftT=.8;}
+        else if(ag>1){const lo=thr>.9?1100:650,wd=Math.max(0,v)*3.6/V.gmax[ag-2]*2400;if(wr<lo&&wd<2200){ag--;shiftT=.6;}}
+      }
+      eg=ag;
+    }else eg=sel==='R'?-1:0;
+  }else eg=gear;
+  const dir=eg>0?1:eg<0?-1:0, gm=eg>0?V.gmax[eg-1]:V.rmax, wv=v*dir;
+  const wrpm=eg===0?0:Math.max(0,wv)*3.6/gm*2400;
+  const coupled=eg!==0&&engineOn;
+  // エンジン回転
+  let target;
+  if(!engineOn)target=0;
+  else if(eg===0)target=IDLE+thr*1700;
+  else if(AT){const slip=Math.max(0,1-Math.abs(v)*3.6/20);target=Math.max(wrpm,IDLE+thr*900*slip);}
+  else{const free=IDLE+thr*1700;target=free+(wrpm-free)*e;}
+  rpm+=(target-rpm)*Math.min(1,dt*(target>rpm?5:3));rpm=Math.min(rpm,2500);
+  if(!AT&&engineOn&&eg!==0&&e>.9&&rpm<420){stallT+=dt;if(stallT>.35){engineOn=false;toast('エンジンストール！ 🔑 / Enterで再始動');}}else stallT=0;
+  // 加減速
+  let a=0;
+  if(coupled&&e>0){
+    const A=eg>0?V.acc[eg-1]:V.racc, lug=Math.max(.15,Math.min(1,(rpm-450)/450));
+    if(wrpm<2380)a+=dir*thr*A*e*lug;
+    if(AT&&thr===0)a+=dir*1.2*Math.max(0,1-wv/1.4);            // クリープ
+    if(thr===0&&Math.abs(v)>.3&&!(AT&&wv<2))a-=Math.sign(v)*(.4+rpm/2400*.9)*e; // エンジンブレーキ
+    if(wrpm>2400)a-=Math.sign(v)*Math.min(8,(wrpm-2400)/2400*14)*e;         // オーバーレブ抑制
+  }else if(!engineOn&&eg!==0&&e>.5)a-=Math.sign(v)*3*e;
+  a-=Math.sign(v)*.3+v*Math.abs(v)*.0012;
+  v+=a*dt;
+  const db=5.5*bl+(keys.brake?6:0);  // ブレーキ（ペダルに応じて徐々に効く）
+  if(db>0&&v!==0)v-=Math.sign(v)*Math.min(Math.abs(v),db*dt);
+  if(Math.abs(v)<.02&&thr===0&&a*Math.sign(v||1)<.5&&(bl>0||eg===0))v=0;
+  // ハンドル
+  const tg=(keys.right?1:0)-(keys.left?1:0);
+  steer+=(tg-steer)*Math.min(1,dt*6);
+  heading+=(v/(V.r0+Math.abs(v)*.9)*steer)*dt*180/Math.PI;heading=((heading%360)+360)%360;
+  const d=v*dt,h=heading*Math.PI/180;
+  pos.lat+=d*Math.cos(h)/111320;pos.lng+=d*Math.sin(h)/(111320*Math.cos(pos.lat*Math.PI/180));
+  map.setView([pos.lat,pos.lng],zoom,{animate:false});
+  bus.style.transform='rotate('+heading+'deg)';
+  // 表示（ALLISON風：D/N/R + 段数）
+  let g;
+  if(!engineOn)g='OFF';else if(AT)g=sel==='D'?'D'+ag:sel;else g=gear===-1?'R':gear===0?'N':String(gear);
+  if(g!==lastG){$('gd').textContent=g;lastG=g;}
+  const sp=String(Math.round(Math.abs(v)*3.6));if(sp!==lastS){$('sv').textContent=sp;lastS=sp;}
+  $('rv').textContent=Math.round(rpm/10)*10;
+  const rf=$('rfill');rf.style.width=Math.min(100,rpm/2500*100)+'%';rf.style.background=rpm>2200?'#e55':rpm>1800?'#ec4':'#6c6';
+  updAudio(thr);
+  requestAnimationFrame(tick);
+}
+setVeh('at');applyMode();toast('画面をタップ／キー入力でエンジン音が鳴ります');requestAnimationFrame(tick);
+</script>
+</body>
+</html>
