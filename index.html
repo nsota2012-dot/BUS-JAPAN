@@ -66,13 +66,28 @@ body.lampL #aL,body.lampR #aR{opacity:1}
 #rb{width:74px;font-size:13px}
 #rbar{height:8px;background:#333;border-radius:4px;overflow:hidden;margin-top:4px}
 #rfill{height:100%;width:0;background:#6c6}
-#shift{position:fixed;z-index:1000;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 82px)}
-body.touch #shift{bottom:calc(env(safe-area-inset-bottom,0px) + 170px)}
+#shift{position:fixed;z-index:1000;left:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 14px)}
+body.touch #shift{bottom:calc(env(safe-area-inset-bottom,0px) + var(--pb) + var(--ws) + 12px)}
 #shift>div{display:none;gap:8px}
 #shift button{min-width:56px;height:48px;font-size:18px;font-weight:700;background:rgba(20,30,45,.78);border:2px solid rgba(255,255,255,.55)}
-#pad{position:fixed;z-index:1000;left:0;right:0;bottom:0;padding:0 14px calc(env(safe-area-inset-bottom,0px) + 76px);display:none;justify-content:space-between;pointer-events:none}
-#pad .grp{display:flex;gap:14px;pointer-events:auto}
-#pad .k{width:84px;height:84px;border-radius:50%;font-size:34px;padding:0;background:rgba(20,30,45,.55);border:2px solid rgba(255,255,255,.6)}
+:root{--pb:66px;--ws:150px;--ps:84px}
+@media (max-height:520px){:root{--ws:112px;--ps:70px}}
+#pad{position:fixed;z-index:1000;left:0;right:0;bottom:0;padding:0 12px calc(env(safe-area-inset-bottom,0px) + var(--pb));display:none;justify-content:space-between;align-items:flex-end;pointer-events:none}
+#pad .grp{display:flex;gap:12px;pointer-events:auto}
+#pad .k{width:var(--ps);height:var(--ps);border-radius:50%;font-size:34px;padding:0;background:rgba(20,30,45,.55);border:2px solid rgba(255,255,255,.6)}
+#wheel{width:var(--ws);height:var(--ws);border-radius:50%;pointer-events:auto;touch-action:none}
+#wsvg{width:100%;height:100%;display:block;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6))}
+#sig{position:fixed;z-index:1000;right:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);display:flex;gap:8px}
+body.touch #sig{bottom:calc(env(safe-area-inset-bottom,0px) + var(--pb) + var(--ps) + 14px)}
+#sig button{width:64px;height:64px;font-size:28px;padding:0;border-radius:14px;border:2px solid rgba(255,255,255,.55);background:rgba(20,30,45,.78)}
+#sig button.act{outline:3px solid #ffae00}
+#sig button.on{background:#d22}
+body.lampL [data-s=sigL],body.lampR [data-s=sigR],body.lampL.lampR [data-s=haz]{background:#ffae00!important;color:#000}
+#cfg{position:fixed;z-index:1500;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
+#cfgBox{background:#fff;color:#222;border-radius:14px;padding:16px;width:min(92vw,440px);max-height:86vh;overflow:auto;touch-action:pan-y;-webkit-user-select:text;user-select:text}
+#cfgBox h2{margin:0 0 6px;font-size:18px}#cfgBox p{margin:0 0 10px;font-size:12px;color:#555;line-height:1.5}
+.cr{border-top:1px solid #ddd;padding:10px 0}.cr small{display:block;color:#666;margin:2px 0 6px;font-size:12px}
+.cb2{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.cb2 input{max-width:100%;font-size:13px}.cb2 button{padding:6px 10px;font-size:13px;background:#345}
 .k.on,#shift button.on{background:rgba(232,65,44,.9)}
 #toast{position:fixed;z-index:1100;top:40%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.82);color:#fff;padding:10px 16px;border-radius:10px;display:none;font-size:14px;text-align:center;pointer-events:none}
 #splash{position:fixed;z-index:2000;inset:0;background:linear-gradient(#1c3550,#0b1622);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px}
@@ -91,8 +106,7 @@ body.touch #shift{bottom:calc(env(safe-area-inset-bottom,0px) + 170px)}
   <form id="f"><input id="q" placeholder="場所を検索（例：渋谷駅、東京タワー）" autocomplete="off"><button type="submit">検索</button><button type="button" id="geo">📍</button></form>
   <div id="res"></div>
   <div id="ctl">
-    <button data-s="sigL">◀</button><button data-s="haz">⚠</button><button data-s="sigR">▶</button>
-    <button data-s="doorF">前ドア閉</button><button data-s="doorR">後ドア閉</button><button data-s="view">🎥</button>
+    <button data-s="doorF">前ドア閉</button><button data-s="doorR">後ドア閉</button><button data-s="view">🎥</button><button data-s="cfg">⚙</button>
   </div>
   <div id="hint"></div>
 </div>
@@ -112,13 +126,15 @@ body.touch #shift{bottom:calc(env(safe-area-inset-bottom,0px) + 170px)}
   <div class="ar" id="aR">▶</div>
 </div>
 <div id="pad">
-  <div class="grp"><button class="k" data-k="left">◀</button><button class="k" data-k="right">▶</button></div>
+  <div id="wheel"><svg id="wsvg" viewBox="-50 -50 100 100"><circle r="45" fill="rgba(20,30,45,.5)" stroke="#111" stroke-width="7"/><circle r="45" fill="none" stroke="#8a97a6" stroke-width="3"/><path d="M-42 4L-9 8Q0 11 9 8L42 4M0 10L0 42" stroke="#111" stroke-width="7" stroke-linecap="round" fill="none"/><circle r="11" fill="#2b3a4a" stroke="#8a97a6" stroke-width="2"/><rect x="-3.5" y="-49" width="7" height="12" rx="2" fill="#e8412c"/></svg></div>
   <div class="grp"><button class="k" data-k="down">■</button><button class="k" data-k="up">▲</button></div>
 </div>
+<div id="sig"><button data-s="pb">🅿</button><button data-s="sigL">◀</button><button data-s="haz">⚠</button><button data-s="sigR">▶</button></div>
+<div id="cfg"><div id="cfgBox"><h2>⚙ 効果音のカスタマイズ</h2><p>お好きな音声ファイル（mp3 / wav / m4a など、8MBまで）を選ぶと効果音を差し替えられます。ファイルはこの端末のブラウザ内にだけ保存され、アップロードはされません。</p><div id="cfgList"></div><button id="cfgClose" style="margin-top:10px;width:100%">閉じる</button></div></div>
 <div id="toast"></div>
 <div id="splash"><h1>🚌 バス運転ゲーム</h1>
   <p>ボタンを押すとエンジン音が有効になります。<br>iPhone / iPad は本体のマナーモード（サイレントスイッチ）を解除してください。</p>
-  <button id="go">スタート</button></div>
+  <button id="go">スタート</button><p style="font-size:11px;opacity:.5">v4 パーキングブレーキ・ハンドル操作・音声カスタム対応版</p></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -132,7 +148,7 @@ const VEH={
 const IDLE=700;
 let cur='at',sel='N',ag=1,gear=0,shiftT=0,cl=0,bl=0,rpm=IDLE,engineOn=true,stallT=0,soundOn=true;
 let pos={lat:35.6595,lng:139.7005},heading=0,camH=0,v=0,steer=0,zoom=20;
-let sig=0,sigH=0,sigDone=false,lastPh=-1,door={F:false,R:false},warned=false,vi=0;
+let sig=0,sigH=0,sigDone=false,lastPh=-1,door={F:false,R:false},warned=false,vi=1,pb=false,crank=0,wAng=0,wId=null,wLast=0;
 const keys={up:false,down:false,left:false,right:false,brake:false,clutch:false},tk={up:false,down:false,left:false,right:false,clutch:false};
 const K=k=>keys[k]||tk[k];
 let mode='touch';
@@ -164,18 +180,28 @@ function setZoom(z){zoom=Math.max(17,Math.min(21,z));sizeBus();}
 function toast(t){const el=$('toast');el.textContent=t;el.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>el.style.display='none',1800);}
 
 // ===== 視点 =====
-const VIEWS=[{n:'3D追従',tilt:58,yaw:0,follow:1},{n:'3D 左側面（ドア確認）',tilt:58,yaw:-32,follow:1},{n:'真上（進行方向）',tilt:0,yaw:0,follow:1},{n:'真上（北固定）',tilt:0,yaw:0,follow:0}];
+const VIEWS=[
+ {n:'3D 近く',tilt:62,yaw:0,follow:1,z:21},
+ {n:'3D 中間',tilt:58,yaw:0,follow:1,z:20},
+ {n:'3D 遠く',tilt:52,yaw:0,follow:1,z:19},
+ {n:'3D 左側面（ドア確認）',tilt:58,yaw:-32,follow:1,z:21},
+ {n:'真上（進行方向）',tilt:0,yaw:0,follow:1,z:20},
+ {n:'真上（北固定）',tilt:0,yaw:0,follow:0,z:20}];
+function fog(){
+  const V=VIEWS[vi],top=V.tilt?62:54;
+  if(V.tilt){
+    const h=innerHeight,p=900,D=1200,th=V.tilt*Math.PI/180;
+    const yf=top/100*h-D*Math.cos(th)*p/(p+D*Math.sin(th)),f=Math.max(0,yf/h*100)+3;
+    $('fog').style.background='linear-gradient(#b9d3ea '+f+'%,rgba(185,211,234,0) '+(f+26)+'%)';
+  }else $('fog').style.background='none';
+}
 function applyView(){
   const V=VIEWS[vi],top=V.tilt?62:54;
   $('plane').style.transform='rotateX('+V.tilt+'deg)';$('plane').style.top=top+'%';
   $('cam').style.perspectiveOrigin='50% '+top+'%';
-  if(V.tilt){
-    const h=innerHeight,p=900,D=1200,th=V.tilt*Math.PI/180;
-    const yf=top/100*h-D*Math.cos(th)*p/(p+D*Math.sin(th)),s=Math.max(0,yf/h*100)+3;
-    $('fog').style.background='linear-gradient(#b9d3ea '+s+'%,rgba(185,211,234,0) '+(s+26)+'%)';
-  }else $('fog').style.background='none';
+  setZoom(V.z);fog();
 }
-addEventListener('resize',applyView);
+addEventListener('resize',fog);
 
 // ===== ギア =====
 const MT_SEQ=[-1,0,1,2,3,4,5,6];
@@ -193,14 +219,12 @@ function shift(d){
 }
 function updSel(){document.querySelectorAll('#atsel button').forEach(b=>b.classList.toggle('on',b.dataset.s===sel));}
 function toggleEngine(){
-  if(engineOn){engineOn=false;return toast('エンジン停止');}
-  if(cur==='at'&&sel!=='N')return toast('N（ニュートラル）で始動してください');
-  if(cur==='mt'&&gear!==0&&cl<.6)return toast('ニュートラルか、クラッチを踏んで始動');
-  engineOn=true;rpm=IDLE;toast('エンジン始動');
+  if(engineOn||crank>0){engineOn=false;crank=0;return toast('エンジン停止');}
+  startEngine(false);
 }
 function setVeh(k){
   cur=k;v=0;sel='N';gear=0;ag=1;cl=0;engineOn=true;rpm=IDLE;
-  bus.classList.toggle('mt',k==='mt');$('gl').textContent=VEH[k].lab;
+  bus.classList.toggle('mt',k==='mt');updLab();
   $('atsel').style.display=k==='at'?'flex':'none';$('mtsel').style.display=k==='mt'?'flex':'none';
   sizeBus();updSel();toast(VEH[k].name);
 }
@@ -208,23 +232,22 @@ function setVeh(k){
 // ===== ウィンカー・ドア =====
 function setSig(s){
   sig=sig===s?0:s;sigH=heading;sigDone=false;lastPh=-1;
-  document.querySelector('[data-s=sigL]').classList.toggle('on',sig===-1);
-  document.querySelector('[data-s=sigR]').classList.toggle('on',sig===1);
-  document.querySelector('[data-s=haz]').classList.toggle('on',sig===2);
+  document.querySelector('[data-s=sigL]').classList.toggle('act',sig===-1);
+  document.querySelector('[data-s=sigR]').classList.toggle('act',sig===1);
+  document.querySelector('[data-s=haz]').classList.toggle('act',sig===2);
   if(!sig){document.body.classList.remove('lampL','lampR');}
 }
 function toggleDoor(k){
-  if(!door[k]&&Math.abs(v)>.8)return toast('停車してからドアを開けてください');
   door[k]=!door[k];$('door'+k).classList.toggle('open',door[k]);bus.classList.toggle('d'+k+'o',door[k]);
   const b=document.querySelector('[data-s=door'+k+']');b.classList.toggle('on',door[k]);
-  b.textContent=(k==='F'?'前ドア':'後ドア')+(door[k]?'開':'閉');whoosh();
+  b.textContent=(k==='F'?'前ドア':'後ドア')+(door[k]?'開':'閉');doorSound(door[k]);
 }
 
 // ===== 操作の割り当て =====
 const ACT={R:()=>setSel('R'),N:()=>setSel('N'),D:()=>setSel('D'),su:()=>shift(1),sd:()=>shift(-1),
   sigL:()=>setSig(-1),sigR:()=>setSig(1),haz:()=>setSig(2),doorF:()=>toggleDoor('F'),doorR:()=>toggleDoor('R'),
   view:()=>{vi=(vi+1)%VIEWS.length;applyView();toast('視点：'+VIEWS[vi].n);},
-  veh:()=>setVeh(cur==='at'?'mt':'at'),eng:toggleEngine,
+  veh:()=>setVeh(cur==='at'?'mt':'at'),eng:toggleEngine,pb:togglePB,cfg:openCfg,
   snd:()=>{soundOn=!soundOn;$('snd').textContent=soundOn?'🔊':'🔇';},
   zi:()=>setZoom(zoom+1),zo:()=>setZoom(zoom-1),
   mode:()=>{mode=mode==='touch'?'pc':'touch';applyMode();toast(mode==='touch'?'タッチ操作モード':'キーボード操作モード');}};
@@ -241,6 +264,7 @@ addEventListener('keydown',e=>{
   else if(c==='KeyC'&&cur==='at')setSel('D');
   else if(cur==='mt'&&/^Digit[1-6]$/.test(c))setMT(+c[5]);
   else if(c==='Enter')toggleEngine();
+  else if(c==='KeyP')togglePB();
   else if(c==='KeyJ')ACT.sigL();else if(c==='KeyL')ACT.sigR();else if(c==='KeyK')ACT.haz();
   else if(c==='KeyF')ACT.doorF();else if(c==='KeyG')ACT.doorR();else if(c==='KeyV')ACT.view();
 });
@@ -258,15 +282,18 @@ function scan(e){
   document.querySelectorAll('[data-k]').forEach(b=>b.classList.toggle('on',!!on[b.dataset.k]||keys[b.dataset.k]));
 }
 function onTouch(e){
-  const hit=e.target.closest&&e.target.closest('[data-k],[data-s]');
+  const hit=e.target.closest&&e.target.closest('[data-k],[data-s],#wheel');
   if(e.type==='touchstart'){
     for(const t of e.changedTouches){
       const el=document.elementFromPoint(t.clientX,t.clientY),s=el&&el.closest('[data-s]');
       if(s)act(s.dataset.s);
+      else if(el&&el.closest('#wheel')&&wId===null){const c=wCenter();wId=t.identifier;wLast=Math.atan2(t.clientY-c[1],t.clientX-c[0]);}
     }
   }
+  if(e.type==='touchmove'&&wId!==null)for(const t of e.changedTouches)if(t.identifier===wId)wMove(t.clientX,t.clientY);
+  if(e.type==='touchend'||e.type==='touchcancel')for(const t of e.changedTouches)if(t.identifier===wId)wId=null;
   scan(e);
-  if(hit||HOLD.some(k=>tk[k]))e.preventDefault();
+  if(hit||wId!==null||HOLD.some(k=>tk[k]))e.preventDefault();
 }
 ['touchstart','touchmove','touchend','touchcancel'].forEach(t=>document.addEventListener(t,onTouch,{passive:false}));
 ['gesturestart','gesturechange'].forEach(t=>document.addEventListener(t,e=>e.preventDefault()));
@@ -285,8 +312,8 @@ function applyMode(){
   document.body.classList.toggle('touch',mode==='touch');
   document.querySelector('[data-s=mode]').textContent=mode==='touch'?'📱':'⌨️';
   $('hint').textContent=mode==='touch'
-    ?'左：ハンドル／右：■ブレーキ ▲アクセル（同時押しOK）／中央：シフト'
-    :'↑↓ アクセル/ブレーキ ←→ ハンドル Space 駐車ブレーキ | J/L/K ウィンカー/ハザード | F/G 前/後ドア | V 視点 | AT: Z/X/C=R/N/D | MT: Shift=クラッチ Q/E・1-6 | Enter=始動';
+    ?'左：ハンドルを回す・シフター／右：🅿 ウィンカー ■ブレーキ ▲アクセル（同時押しOK）'
+    :'↑↓ アクセル/ブレーキ ←→ ハンドル Space 急ブレーキ P パーキングブレーキ | J/L/K ウィンカー/ハザード | F/G 前/後ドア | V 視点 | AT: Z/X/C=R/N/D | MT: Shift=クラッチ Q/E・1-6 | Enter=始動';
   try{localStorage.setItem('busMode',mode);}catch(e){}
 }
 
@@ -332,16 +359,17 @@ function initAudio(){
 function unlock(){
   if(!AC)initAudio();
   if(AC&&AC.state!=='running')AC.resume();
+  if(AC&&!loaded){loaded=true;loadCustom();}
 }
 ['touchend','click','pointerup','mousedown'].forEach(t=>addEventListener(t,unlock,{passive:true}));
-$('go').onclick=()=>{unlock();$('splash').style.display='none';toast('Dで発進 / 🎥で視点切替');};
+$('go').onclick=()=>{unlock();$('splash').style.display='none';const r=AC?AC.resume():null;Promise.resolve(r).then(()=>startEngine(true),()=>startEngine(true));};
 function updAudio(thr){
   if(!AC||AC.state!=='running')return;
   const t=AC.currentTime,f=Math.max(8,rpm/60*VEH[cur].cyl);
   oscs.forEach(x=>x.o.frequency.setTargetAtTime(f*x.m,t,.04));
   flt.frequency.setTargetAtTime(500+rpm*.8+thr*700,t,.08);
-  const on=engineOn&&soundOn&&rpm>150;
-  mg.gain.setTargetAtTime(on?.35+.25*thr+rpm/2400*.2:0,t,.08);
+  const cr=crank>0,on=(engineOn||cr)&&soundOn&&rpm>100&&!(cr&&custom.engStart);
+  mg.gain.setTargetAtTime(on?.35+.25*thr+rpm/2400*.2+(cr?.3:0):0,t,.08);
 }
 function blip(on){
   if(!AC||AC.state!=='running'||!soundOn)return;
@@ -350,24 +378,27 @@ function blip(on){
   g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.14,t+.004);g.gain.exponentialRampToValueAtTime(.0001,t+.045);
   o.connect(g).connect(AC.destination);o.start(t);o.stop(t+.06);
 }
-function whoosh(){
+function whoosh(open){
   if(!AC||AC.state!=='running'||!soundOn)return;
   const t=AC.currentTime,s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();
-  s.buffer=nbuf;f.type='bandpass';f.frequency.setValueAtTime(2500,t);f.frequency.exponentialRampToValueAtTime(700,t+.7);
+  s.buffer=nbuf;f.type='bandpass';
+  f.frequency.setValueAtTime(open?2500:700,t);f.frequency.exponentialRampToValueAtTime(open?700:2500,t+.7);
   g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.35,t+.05);g.gain.exponentialRampToValueAtTime(.0001,t+.8);
   s.connect(f).connect(g).connect(AC.destination);s.start(t);s.stop(t+.9);
+  if(!open){const o=AC.createOscillator(),og=AC.createGain();o.frequency.setValueAtTime(90,t+.65);o.frequency.exponentialRampToValueAtTime(40,t+.85);
+    og.gain.setValueAtTime(.0001,t+.65);og.gain.exponentialRampToValueAtTime(.4,t+.67);og.gain.exponentialRampToValueAtTime(.0001,t+.9);
+    o.connect(og).connect(AC.destination);o.start(t+.65);o.stop(t+.95);}
 }
 
 // ===== ゲームループ =====
 let last=performance.now(),lastG='',lastS='',lL=false,lR=false,lB=false;
 function tick(t){
   const dt=Math.min(.05,(t-last)/1000);last=t;
-  const V=VEH[cur],AT=cur==='at',doorOpen=door.F||door.R;
+  const V=VEH[cur],AT=cur==='at';
   let thr=(K('up')&&engineOn)?1:0;
-  if(doorOpen){if(thr&&!warned){toast('ドアが開いています（閉めると発進できます）');warned=true;}thr=0;}
+  if(pb&&thr&&!warned){toast('パーキングブレーキ作動中');warned=true;}
   if(!K('up'))warned=false;
-  bl+=((K('down')||doorOpen?1:0)-bl)*Math.min(1,dt*(K('down')?4:12));
-  if(doorOpen)bl=Math.max(bl,.8);
+  bl+=((K('down')?1:0)-bl)*Math.min(1,dt*(K('down')?4:12));
   if(AT)cl=0;else{cl+=K('clutch')?6*dt:-1.6*dt;cl=Math.max(0,Math.min(1,cl));}
   const e=AT?1:1-cl;
   let eg;
@@ -385,26 +416,30 @@ function tick(t){
   const dir=eg>0?1:eg<0?-1:0,gm=eg>0?V.gmax[eg-1]:V.rmax,wv=v*dir;
   const wrpm=eg===0?0:Math.max(0,wv)*3.6/gm*2400,coupled=eg!==0&&engineOn;
   let target;
-  if(!engineOn)target=0;
+  if(crank>0)target=240+Math.sin(t/35)*50;
+  else if(!engineOn)target=0;
   else if(eg===0)target=IDLE+thr*1700;
   else if(AT){const slip=Math.max(0,1-Math.abs(v)*3.6/20);target=Math.max(wrpm,IDLE+thr*900*slip);}
   else{const free=IDLE+thr*1700;target=free+(wrpm-free)*e;}
   rpm+=(target-rpm)*Math.min(1,dt*(target>rpm?5:3));rpm=Math.min(rpm,2500);
-  if(!AT&&engineOn&&!doorOpen&&eg!==0&&e>.9&&rpm<420){stallT+=dt;if(stallT>.35){engineOn=false;toast('エンジンストール！ 🔑 / Enterで再始動');}}else stallT=0;
+  if(crank>0){crank-=dt;if(crank<=0){crank=0;engineOn=true;rpm=1500;}}
+  if(!AT&&engineOn&&eg!==0&&e>.9&&rpm<420){stallT+=dt;if(stallT>.35){engineOn=false;toast('エンジンストール！ 🔑 / Enterで再始動');}}else stallT=0;
   let a=0;
   if(coupled&&e>0){
     const A=eg>0?V.acc[eg-1]:V.racc,lug=Math.max(.15,Math.min(1,(rpm-450)/450));
     if(wrpm<2380)a+=dir*thr*A*e*lug;
-    if(AT&&thr===0&&!doorOpen)a+=dir*1.2*Math.max(0,1-wv/1.4);
+    if(AT&&thr===0)a+=dir*1.2*Math.max(0,1-wv/1.4);
     if(thr===0&&Math.abs(v)>.3&&!(AT&&wv<2))a-=Math.sign(v)*(.4+rpm/2400*.9)*e;
     if(wrpm>2400)a-=Math.sign(v)*Math.min(8,(wrpm-2400)/2400*14)*e;
   }else if(!engineOn&&eg!==0&&e>.5)a-=Math.sign(v)*3*e;
   a-=Math.sign(v)*.3+v*Math.abs(v)*.0012;
   v+=a*dt;
-  const db=5.5*bl+(keys.brake?6:0);
+  const db=5.5*bl+(keys.brake?6:0)+(pb?14:0);
   if(db>0&&v!==0)v-=Math.sign(v)*Math.min(Math.abs(v),db*dt);
   if(Math.abs(v)<.02&&thr===0&&a*Math.sign(v||1)<.5&&(bl>0||eg===0))v=0;
-  const tg=(K('right')?1:0)-(K('left')?1:0);
+  if(wId===null)wAng*=Math.exp(-dt*7);
+  $('wsvg').style.transform='rotate('+wAng+'deg)';
+  const tg=Math.max(-1,Math.min(1,(K('right')?1:0)-(K('left')?1:0)+wAng/120));
   steer+=(tg-steer)*Math.min(1,dt*6);
   heading+=(v/(V.r0+Math.abs(v)*.9)*steer)*dt*180/Math.PI;heading=((heading%360)+360)%360;
   const d=v*dt,h=heading*Math.PI/180;
@@ -427,7 +462,7 @@ function tick(t){
   if(nB!==lB){lB=nB;document.body.classList.toggle('brk',nB);}
   // 表示
   let g;
-  if(!engineOn)g='OFF';else if(AT)g=sel==='D'?'D'+ag:sel;else g=gear===-1?'R':gear===0?'N':String(gear);
+  if(crank>0)g='CRK';else if(!engineOn)g='OFF';else if(AT)g=sel==='D'?'D'+ag:sel;else g=gear===-1?'R':gear===0?'N':String(gear);
   if(g!==lastG){$('gd').textContent=g;lastG=g;}
   const sp=String(Math.round(Math.abs(v)*3.6));if(sp!==lastS){$('sv').textContent=sp;lastS=sp;}
   $('rv').textContent=Math.round(rpm/10)*10;
@@ -435,7 +470,83 @@ function tick(t){
   updAudio(thr);
   requestAnimationFrame(tick);
 }
-setVeh('at');applyMode();applyView();requestAnimationFrame(tick);
+// ===== ハンドル（クルクル回す） =====
+function wCenter(){const r=$('wheel').getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2];}
+function wMove(x,y){
+  const c=wCenter(),a=Math.atan2(y-c[1],x-c[0]);let d=a-wLast;
+  if(d>Math.PI)d-=2*Math.PI;if(d<-Math.PI)d+=2*Math.PI;wLast=a;
+  wAng=Math.max(-180,Math.min(180,wAng+d*180/Math.PI));
+}
+$('wheel').addEventListener('pointerdown',e=>{if(e.pointerType==='touch')return;const c=wCenter();wId='m';wLast=Math.atan2(e.clientY-c[1],e.clientX-c[0]);});
+addEventListener('pointermove',e=>{if(wId==='m')wMove(e.clientX,e.clientY);});
+addEventListener('pointerup',()=>{if(wId==='m')wId=null;});
+
+// ===== パーキングブレーキ =====
+function updLab(){const g=$('gl');g.textContent=VEH[cur].lab+(pb?' (P)':'');g.style.color=pb?'#f66':'';g.style.opacity=pb?1:'';}
+function togglePB(){
+  pb=!pb;document.querySelector('[data-s=pb]').classList.toggle('on',pb);updLab();
+  blip(true);setTimeout(()=>blip(false),90);toast(pb?'パーキングブレーキ ON':'パーキングブレーキ 解除');
+}
+
+// ===== エンジン始動 =====
+function startEngine(force){
+  if(engineOn||crank>0)return;
+  if(!force){
+    if(cur==='at'&&sel!=='N')return toast('N（ニュートラル）で始動してください');
+    if(cur==='mt'&&gear!==0&&cl<.6)return toast('ニュートラルか、クラッチを踏んで始動');
+  }
+  const b=custom.engStart;crank=b?Math.min(3.5,b.duration*.85):1.25;
+  engStartSound(b);
+}
+function engStartSound(b){
+  if(!AC||AC.state!=='running'||!soundOn)return;
+  if(b)return playBuf(b);
+  const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain(),f=AC.createBiquadFilter();
+  o.type='sawtooth';o.frequency.setValueAtTime(65,t);o.frequency.linearRampToValueAtTime(125,t+1.1);
+  f.type='bandpass';f.frequency.value=420;f.Q.value=1.5;
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.25,t+.1);g.gain.setValueAtTime(.25,t+1);g.gain.exponentialRampToValueAtTime(.0001,t+1.3);
+  o.connect(f).connect(g).connect(AC.destination);o.start(t);o.stop(t+1.4);
+}
+
+// ===== カスタム効果音（端末のブラウザ内に保存） =====
+const SLOTS=[['doorOpen','ドアが開く音'],['doorClose','ドアが閉まる音'],['engStart','エンジン始動音']];
+const custom={},meta={};let loaded=false;
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('busgame',1);r.onupgradeneeded=()=>r.result.createObjectStore('snd');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+async function dbOp(m,fn){const d=await idb();return new Promise((res,rej)=>{const tx=d.transaction('snd',m),rq=fn(tx.objectStore('snd'));tx.oncomplete=()=>res(rq&&rq.result);tx.onerror=()=>rej(tx.error);});}
+const dec=ab=>new Promise((res,rej)=>AC.decodeAudioData(ab,res,rej));
+async function loadCustom(){
+  try{for(const [id] of SLOTS){const r=await dbOp('readonly',st=>st.get(id));if(r){custom[id]=await dec(r.data.slice(0));meta[id]=r.name;}}}catch(e){}
+  refreshCfg();
+}
+function playBuf(b){if(!AC||AC.state!=='running'||!soundOn)return;const s=AC.createBufferSource();s.buffer=b;s.connect(AC.destination);s.start();}
+function doorSound(open){const b=custom[open?'doorOpen':'doorClose'];b?playBuf(b):whoosh(open);}
+function openCfg(){refreshCfg();$('cfg').style.display='flex';}
+$('cfgClose').onclick=()=>$('cfg').style.display='none';
+function refreshCfg(){
+  const box=$('cfgList');box.innerHTML='';
+  SLOTS.forEach(([id,name])=>{
+    const row=document.createElement('div');row.className='cr';
+    row.innerHTML='<b>'+name+'</b><small>'+(custom[id]?'設定済み：'+meta[id]+'（'+custom[id].duration.toFixed(1)+'秒）':'初期音（内蔵）')+'</small>';
+    const inp=document.createElement('input');inp.type='file';inp.accept='audio/*';
+    inp.onchange=async()=>{
+      const f=inp.files[0];if(!f)return;unlock();
+      if(!AC)return toast('この環境では音声を使えません');
+      if(f.size>8e6)return toast('8MB以下のファイルにしてください');
+      try{const data=await f.arrayBuffer(),buf=await dec(data.slice(0));custom[id]=buf;meta[id]=f.name;
+        try{await dbOp('readwrite',st=>st.put({name:f.name,data},id));}catch(e){}
+        toast('「'+name+'」を設定しました');
+      }catch(e){toast('読み込めない音声ファイルです（mp3 / wav / m4a など）');}
+      refreshCfg();
+    };
+    const t=document.createElement('button');t.textContent='▶ 試聴';
+    t.onclick=()=>{unlock();id==='doorOpen'?doorSound(true):id==='doorClose'?doorSound(false):engStartSound(custom.engStart);};
+    const r=document.createElement('button');r.textContent='初期に戻す';
+    r.onclick=async()=>{delete custom[id];delete meta[id];try{await dbOp('readwrite',st=>st.delete(id));}catch(e){}refreshCfg();};
+    const w=document.createElement('div');w.className='cb2';w.append(inp,t,r);row.append(w);box.append(row);
+  });
+}
+
+setVeh('at');engineOn=false;rpm=0;applyMode();applyView();requestAnimationFrame(tick);
 </script>
 </body>
 </html>
