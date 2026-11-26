@@ -15,6 +15,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#111;font-family:syste
 #fog{position:fixed;inset:0;z-index:500;pointer-events:none}
 #bus{--bd:#f4f4f4;--st:#e8412c;position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d;will-change:transform}
 #bus.mt{--bd:#fff1b8;--st:#1b8a4a}
+#bus.hw{--bd:#f2f6fb;--st:#1d5fd1}
 #box{position:absolute;left:calc(var(--W)/-2);top:calc(var(--L)/-2);width:var(--W);height:var(--L);transform-style:preserve-3d}
 .f{position:absolute;overflow:visible}
 .f svg{position:absolute;inset:0;width:100%;height:100%}
@@ -87,6 +88,24 @@ body.lampL [data-s=sigL],body.lampR [data-s=sigR],body.lampL.lampR [data-s=haz]{
 #shift [data-s=st2]{font-size:14px;min-width:72px;flex:1 1 100%}
 #tabs{display:flex;gap:6px;margin:8px 0}#tabs button{flex:1;padding:8px 0;font-size:16px;background:#345}#tabs button.on{background:#e8412c}
 .cr label{font-size:13px;display:block;margin-top:6px}.cr .tx{width:100%;box-sizing:border-box;font-size:14px;padding:6px;margin-top:6px}
+#lcdmini{align-self:flex-start;max-width:100%;box-sizing:border-box;background:#07140b;color:#7dff9a;font:600 12px/1.3 ui-monospace,Menlo,monospace;padding:5px 9px;border-radius:8px;border:1px solid #2a4;text-shadow:0 0 5px #2f8;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ca,#caEd{position:fixed;z-index:1500;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center}
+#caBox{width:min(96vw,520px);background:linear-gradient(#3b3f45,#202327);border:2px solid #70757d;border-radius:14px;padding:12px;color:#ddd;box-shadow:0 10px 30px #000}
+.caHead{display:flex;align-items:center;gap:8px;margin-bottom:8px}.caHead b{font-size:15px;letter-spacing:.1em}.caHead span{font-size:10px;opacity:.6;flex:1}
+.caHead button{padding:4px 10px;background:#555}
+#lcd{background:#06120a;color:#7dff9a;font-family:ui-monospace,Menlo,monospace;border:3px solid #111;border-radius:6px;padding:8px 10px;text-shadow:0 0 6px #2f8;min-height:76px;box-shadow:inset 0 0 14px #000}
+#lcd div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.l1{font-size:12px;opacity:.8}.l2{font-size:14px;margin-top:2px}.l3{font-size:20px;font-weight:700;margin-top:4px}
+.caBtns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.caBtns button{padding:12px 4px;font-size:13px;background:linear-gradient(#5a5f67,#3a3e44);border:1px solid #8a8f98;border-bottom:3px solid #1b1d20;border-radius:8px;color:#eee;touch-action:manipulation}
+.caBtns button:active{transform:translateY(2px);border-bottom-width:1px}
+.caBtns .big{background:linear-gradient(#d9772c,#a8480f);grid-column:span 2;font-size:16px;font-weight:700}
+.led{display:inline-block;width:8px;height:8px;border-radius:50%;background:#333;margin-right:5px;vertical-align:middle}.led.on{background:#3f6;box-shadow:0 0 6px #3f6}
+#caEdBox{background:#fff;color:#222;border-radius:14px;padding:14px;width:min(96vw,560px);max-height:90vh;overflow:auto;touch-action:pan-y;-webkit-user-select:text;user-select:text}
+#caEdBox h2{margin:0 0 8px;font-size:17px}
+#caEdBox input[type=text],#caEdBox select{font-size:15px;padding:6px;border:1px solid #bbb;border-radius:6px;box-sizing:border-box;min-width:0}
+.erow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0}
+.srow{border:1px solid #ddd;border-radius:10px;padding:8px;margin:8px 0;background:#f7f8fa}.srow .f{width:100%;margin-top:4px}
+.srow button,.erow button{padding:6px 10px;font-size:13px;background:#345}
 #cfg{position:fixed;z-index:1500;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
 #cfgBox{background:#fff;color:#222;border-radius:14px;padding:16px;width:min(92vw,440px);max-height:86vh;overflow:auto;touch-action:pan-y;-webkit-user-select:text;user-select:text}
 #cfgBox h2{margin:0 0 6px;font-size:18px}#cfgBox p{margin:0 0 10px;font-size:12px;color:#555;line-height:1.5}
@@ -112,7 +131,7 @@ body.lampL [data-s=sigL],body.lampR [data-s=sigR],body.lampL.lampR [data-s=haz]{
   <div id="ctl">
     <button data-s="doorF">前ドア閉</button><button data-s="doorR">後ドア閉</button><button data-s="view">🎥</button><button data-s="trans">AT</button><button data-s="pre">♪1</button><button data-s="cfg">⚙</button>
   </div>
-  <div id="hint"></div>
+  <div id="lcdmini" data-s="ca">📟</div><div id="hint"></div>
 </div>
 <div id="side">
   <button data-s="mode">📱</button><button data-s="veh">🚌</button><button data-s="eng">🔑</button>
@@ -135,10 +154,19 @@ body.lampL [data-s=sigL],body.lampR [data-s=sigR],body.lampL.lampR [data-s=haz]{
 </div>
 <div id="sig"><button data-s="pb">🅿</button><button data-s="sigL">◀</button><button data-s="haz">⚠</button><button data-s="sigR">▶</button></div>
 <div id="cfg"><div id="cfgBox"><h2>⚙ 効果音のカスタマイズ</h2><p>お好きな音声ファイル（mp3 / wav / m4a など、15MBまで）を選ぶと効果音を差し替えられます。iPhone / iPad では「ファイル」アプリ内のファイルを選んでください（ミュージックアプリの曲は選べません）。1〜4のサウンドセットに別々に保存でき、上部の「♪」ボタンでも切り替えられます。ファイルはこの端末のブラウザ内にだけ保存され、アップロードはされません。</p><div id="tabs"></div><div id="cfgList"></div><button id="cfgClose" style="margin-top:10px;width:100%">閉じる</button></div></div>
+<div id="ca"><div id="caBox">
+  <div class="caHead"><b>音声合成装置</b><span>BUS ANNOUNCER</span><button id="caClose">✕</button></div>
+  <div id="lcd"><div class="l1" id="lcd1"></div><div class="l2" id="lcd2"></div><div class="l3" id="lcd3"></div></div>
+  <div class="caBtns">
+    <button data-c="rp">◀ 路線</button><button data-c="rn">路線 ▶</button><button data-c="sp">◀ 停留所</button><button data-c="sn">停留所 ▶</button>
+    <button data-c="play" class="big">▶ 次停留所の放送</button><button data-c="stop">■ 停止</button><button data-c="auto"><i class="led"></i>自動</button>
+    <button data-c="edit" style="grid-column:span 4">✎ 路線・停留所・放送を編集</button>
+  </div></div></div>
+<div id="caEd"><div id="caEdBox"><h2>✎ 路線・停留所の編集</h2><p style="margin:0 0 6px;font-size:12px;color:#555">停留所ごとに「読み」「放送文」「放送音声ファイル」を設定できます。音声ファイルがあればそれを、なければ音声合成で読み上げます。入力は自動で保存されます。</p><div id="caEdBody"></div><button id="caEdClose" style="margin-top:8px;width:100%">閉じる</button></div></div>
 <div id="toast"></div>
 <div id="splash"><h1>🚌 バス運転ゲーム</h1>
   <p>ボタンを押すとエンジン音が有効になります。<br>iPhone / iPad は本体のマナーモード（サイレントスイッチ）を解除してください。</p>
-  <button id="go">スタート</button><p style="font-size:11px;opacity:.5">v8 配置入れ替え・ハンドル強化・iOS音声読込対応</p></div>
+  <button id="go">スタート</button><p style="font-size:11px;opacity:.5">v9 高速バス・エルガ風シフト音・音声合成装置</p></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -147,7 +175,8 @@ const ad=(a,b)=>((a-b+540)%360+360)%360-180;
 // ===== 車種 =====
 const VEH={
   at:{name:'大型バス 9m（白×赤）',lab:'AT',len:9,wid:2.7,hgt:3.0,r0:6,cyl:3,gmax:[14,26,42,60,80,100],acc:[2.6,2.1,1.6,1.2,.9,.65],rmax:10,racc:1.5},
-  mt:{name:'中型バス 7m（黄×緑）',lab:'MT',len:7,wid:2.4,hgt:2.8,r0:4.5,cyl:2,gmax:[12,24,38,55,72,90],acc:[2.4,1.9,1.4,1.0,.75,.55],rmax:9,racc:1.4}
+  mt:{name:'中型バス 7m（黄×緑）',lab:'MT',len:7,wid:2.4,hgt:2.8,r0:4.5,cyl:2,gmax:[12,24,38,55,72,90],acc:[2.4,1.9,1.4,1.0,.75,.55],rmax:9,racc:1.4},
+  hw:{name:'高速バス 12m（白×青）',lab:'HW',len:12,wid:2.8,hgt:3.5,r0:7.5,cyl:3,gmax:[16,30,48,68,92,120],acc:[2.2,1.8,1.4,1.1,.85,.6],rmax:10,racc:1.4}
 };
 const IDLE=700;
 let cur='at',sel='N',ag=1,gear=0,shiftT=0,cl=0,bl=0,rpm=IDLE,engineOn=true,stallT=0,soundOn=true;
@@ -214,9 +243,9 @@ function setSel(s){
   if(trans!=='at')return;
   if(s==='R'&&v>1.4)return toast('停止してからR（後退）に入れてください');
   if(s==='D'&&v<-1.4)return toast('停止してからD（前進）に入れてください');
-  sel=s;if(s==='D'){ag=Math.max(start2?2:1,pickGear());shiftT=.5;}updSel();
+  if(s!==sel)shiftSound();sel=s;if(s==='D'){ag=Math.max(start2?2:1,pickGear());shiftT=.5;}updSel();
 }
-function setMT(n){if(n===gear)return;if(n!==0&&cl<.6)return toast('クラッチを踏んでからシフト！');gear=n;}
+function setMT(n){if(n===gear)return;if(n!==0&&cl<.6)return toast('クラッチを踏んでからシフト！');gear=n;shiftSound(.7);}
 function shift(d){
   if(trans==='at'){const o=['R','N','D'];setSel(o[Math.max(0,Math.min(2,o.indexOf(sel)+d))]);}
   else setMT(MT_SEQ[Math.max(0,Math.min(7,MT_SEQ.indexOf(gear)+d))]);
@@ -228,7 +257,7 @@ function toggleEngine(){
 }
 function setVeh(k){
   cur=k;v=0;sel='N';gear=0;ag=1;cl=0;engineOn=true;rpm=IDLE;
-  bus.classList.toggle('mt',k==='mt');updLab();
+  bus.classList.toggle('mt',k==='mt');bus.classList.toggle('hw',k==='hw');updLab();
   applyTransUI();
   sizeBus();updSel();toast(VEH[k].name+'／'+(trans==='at'?'AT':'MT'));
 }
@@ -245,6 +274,7 @@ function toggleDoor(k){
   door[k]=!door[k];$('door'+k).classList.toggle('open',door[k]);bus.classList.toggle('d'+k+'o',door[k]);
   const b=document.querySelector('[data-s=door'+k+']');b.classList.toggle('on',door[k]);
   b.textContent=(k==='F'?'前ドア':'後ドア')+(door[k]?'開':'閉');doorSound(k,door[k]);
+  if(door[k]){stopSeq();if(CA.auto&&CA.departed)caArrive();}
   clearTimeout(annT);if(!door[k]&&!door.F&&!door.R)annT=setTimeout(()=>playAnn(),1700);
 }
 
@@ -252,7 +282,7 @@ function toggleDoor(k){
 const ACT={R:()=>setSel('R'),N:()=>setSel('N'),D:()=>setSel('D'),su:()=>shift(1),sd:()=>shift(-1),
   sigL:()=>setSig(-1),sigR:()=>setSig(1),haz:()=>setSig(2),doorF:()=>toggleDoor('F'),doorR:()=>toggleDoor('R'),
   view:()=>{vi=(vi+1)%VIEWS.length;applyView();toast('視点：'+VIEWS[vi].n);},
-  veh:()=>setVeh(cur==='at'?'mt':'at'),eng:toggleEngine,pb:togglePB,cfg:openCfg,pre:()=>cyclePreset(),trans:()=>setTrans(trans==='at'?'mt':'at'),st2:()=>toggleSt2(),
+  veh:()=>{const o=['at','mt','hw'];setVeh(o[(o.indexOf(cur)+1)%3]);},eng:toggleEngine,pb:togglePB,cfg:openCfg,pre:()=>cyclePreset(),ca:()=>openCA(),trans:()=>setTrans(trans==='at'?'mt':'at'),st2:()=>toggleSt2(),
   snd:()=>{soundOn=!soundOn;$('snd').textContent=soundOn?'🔊':'🔇';},
   zi:()=>setZoom(zoom+1),zo:()=>setZoom(zoom-1),
   mode:()=>{mode=mode==='touch'?'pc':'touch';applyMode();toast(mode==='touch'?'タッチ操作モード':'キーボード操作モード');}};
@@ -271,6 +301,7 @@ addEventListener('keydown',e=>{
   else if(c==='Enter')toggleEngine();
   else if(c==='KeyP')togglePB();
   else if(c==='KeyM')ACT.trans();
+  else if(c==='KeyB')openCA();
   else if(c==='KeyT')toggleSt2();
   else if(c==='KeyJ')ACT.sigL();else if(c==='KeyL')ACT.sigR();else if(c==='KeyK')ACT.haz();
   else if(c==='KeyF')ACT.doorF();else if(c==='KeyG')ACT.doorR();else if(c==='KeyV')ACT.view();
@@ -320,7 +351,7 @@ function applyMode(){
   document.querySelector('[data-s=mode]').textContent=mode==='touch'?'📱':'⌨️';
   $('hint').textContent=mode==='touch'
     ?'左：ハンドルを回す・🅿 ウィンカー／右：シフター ■ブレーキ ▲アクセル（同時押しOK）'
-    :'↑↓ アクセル/ブレーキ ←→ ハンドル Space 急ブレーキ P パーキングブレーキ | M AT/MT切替 | T 2速発進 | J/L/K ウィンカー/ハザード | F/G 前/後ドア | V 視点 | AT: Z/X/C=R/N/D | MT: Shift=クラッチ Q/E・1-6 | Enter=始動';
+    :'↑↓ アクセル/ブレーキ ←→ ハンドル Space 急ブレーキ P パーキングブレーキ | M AT/MT切替 | T 2速発進 | B 音声合成装置 | J/L/K ウィンカー/ハザード | F/G 前/後ドア | V 視点 | AT: Z/X/C=R/N/D | MT: Shift=クラッチ Q/E・1-6 | Enter=始動';
   try{localStorage.setItem('busMode',mode);}catch(e){}
 }
 
@@ -367,7 +398,7 @@ function initAudio(){
 function unlock(){
   if(!AC)initAudio();
   if(AC&&AC.state!=='running')AC.resume();
-  if(AC&&!loaded){loaded=true;loadCustom();}
+  if(AC&&!loaded){loaded=true;loadCustom();loadStopAudio();}
   if(!ttsU&&'speechSynthesis' in window){ttsU=true;try{speechSynthesis.speak(new SpeechSynthesisUtterance(''));}catch(e){}}
 }
 ['touchend','click','pointerup','mousedown'].forEach(t=>addEventListener(t,unlock,{passive:true}));
@@ -416,8 +447,8 @@ function tick(t){
       shiftT-=dt;
       if(shiftT<=0&&engineOn){
         const wr=Math.max(0,v)*3.6/V.gmax[ag-1]*2400;
-        if(ag<6&&wr>1600+thr*600){ag++;shiftT=.8;}
-        else if(ag>(start2?2:1)){const lo=thr>.9?1100:650,wd=Math.max(0,v)*3.6/V.gmax[ag-2]*2400;if(wr<lo&&wd<2200){ag--;shiftT=.6;}}
+        if(ag<6&&wr>1600+thr*600){ag++;shiftT=.8;shiftSound(.3);}
+        else if(ag>(start2?2:1)){const lo=thr>.9?1100:650,wd=Math.max(0,v)*3.6/V.gmax[ag-2]*2400;if(wr<lo&&wd<2200){ag--;shiftT=.6;shiftSound(.3);}}
       }
       if(start2&&ag<2)ag=2;
       eg=ag;
@@ -521,7 +552,7 @@ function engStartSound(b){
 }
 
 // ===== カスタム効果音（サウンドセット1〜4・端末のブラウザ内に保存） =====
-const SLOTS=[['doorFOpen','前ドア 開ける音'],['doorFClose','前ドア 閉める音'],['doorROpen','後ろドア 開ける音'],['doorRClose','後ろドア 閉める音'],['ann','発車放送（ドアが閉まった後）'],['engStart','エンジン始動音']];
+const SLOTS=[['doorFOpen','前ドア 開ける音'],['doorFClose','前ドア 閉める音'],['doorROpen','後ろドア 開ける音'],['doorRClose','後ろドア 閉める音'],['ann','発車放送（ドアが閉まった後）'],['shift','シフト操作音（セレクター・変速）'],['engStart','エンジン始動音']];
 const custom={},meta={},defBuf={},defRaw={};let loaded=false,annT=null,ttsU=false,preset=1;
 try{preset=Math.max(1,Math.min(4,+localStorage.getItem('busPreset')||1));}catch(e){}
 const pk=id=>'p'+preset+':'+id;
@@ -538,11 +569,11 @@ async function loadCustom(){
   }}catch(e){}
   refreshCfg();
 }
-function playBuf(b){
+function playBuf(b,vol){
   if(!soundOn)return;
-  if(b.isEl){try{const a=new Audio(b.url);a.play().catch(()=>{});}catch(e){}return;}
+  if(b.isEl){try{const a=new Audio(b.url);if(vol)a.volume=Math.min(1,vol);a.play().catch(()=>{});}catch(e){}return;}
   if(!AC||AC.state!=='running')return;
-  const s=AC.createBufferSource();s.buffer=b;s.connect(AC.destination);s.start();
+  const s=AC.createBufferSource(),g=AC.createGain();g.gain.value=vol||1;s.buffer=b;s.connect(g).connect(AC.destination);s.start();
 }
 function readBuf(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error||new Error('読込失敗'));r.readAsArrayBuffer(f);});}
 const guessType=n=>/\.mp3$/i.test(n)?'audio/mpeg':/\.(m4a|mp4|aac)$/i.test(n)?'audio/mp4':/\.wav$/i.test(n)?'audio/wav':/\.ogg$/i.test(n)?'audio/ogg':'audio/mpeg';
@@ -557,10 +588,11 @@ function doorSound(k,open){const b=custom['door'+k+(open?'Open':'Close')]||defBu
 function annCfg(){let a={};try{a=JSON.parse(localStorage.getItem('busAnn'))||{};}catch(e){}return Object.assign({on:true,text:ANN_DEF},a[preset]);}
 function annSave(c){let a={};try{a=JSON.parse(localStorage.getItem('busAnn'))||{};}catch(e){}a[preset]=c;try{localStorage.setItem('busAnn',JSON.stringify(a));}catch(e){}}
 function playAnn(force){
-  const c=annCfg();if(!soundOn||(!c.on&&!force))return;
-  if(custom.ann)return playBuf(custom.ann);
-  if(defBuf.ann)playBuf(defBuf.ann);
-  if('speechSynthesis' in window&&c.text){try{const u=new SpeechSynthesisUtterance(c.text);u.lang='ja-JP';u.rate=.95;setTimeout(()=>{speechSynthesis.cancel();speechSynthesis.speak(u);},1100);}catch(e){}}
+  const c=annCfg();if(!soundOn)return;
+  let items=[];
+  if(c.on||force)items=depItems();
+  if(!force&&CA.auto){const r=caR(),nx=r.stops[CA.ai+1];if(nx)items=items.concat(stopItems(nx,r));CA.departed=true;caSave();caUpdate();}
+  if(items.length)runSeq(items);
 }
 // --- 初期音（内蔵の音声ファイル相当。WAVとして書き出し可能） ---
 function norm(d,pk_){let m=0;for(let i=0;i<d.length;i++)m=Math.max(m,Math.abs(d[i]));if(m>0)for(let i=0;i<d.length;i++)d[i]*=pk_/m;return d;}
@@ -581,8 +613,21 @@ function genChime(){
   const note=(f,t0,len)=>{for(let i=0;i<len*sr;i++){const t=i/sr,k=Math.floor(t0*sr)+i;if(k>=n)break;const e=Math.min(1,t/.01)*Math.exp(-t*4.5);d[k]+=e*(Math.sin(2*Math.PI*f*t)+.3*Math.sin(4*Math.PI*f*t)+.1*Math.sin(6*Math.PI*f*t));}};
   note(880,0,.6);note(660,.4,.85);return norm(d,.6);
 }
+function genShift(){
+  const sr=44100,n=Math.floor(sr*.45),d=new Float32Array(n);
+  for(let i=0;i<sr*.07;i++){const t=i/sr;d[i]+=Math.sin(2*Math.PI*1250*t)*Math.min(1,t/.004)*Math.min(1,(.07-t)/.01)*.5;}
+  const o=Math.floor(sr*.13);
+  for(let i=0;i<sr*.3;i++){const t=i/sr,k=o+i;if(k>=n)break;d[k]+=Math.sin(2*Math.PI*(95-55*Math.min(1,t/.2))*t)*Math.exp(-t*16)*.8+(Math.random()*2-1)*Math.exp(-t*60)*.35;}
+  return norm(d,.7);
+}
+function genDing(){
+  const sr=44100,n=Math.floor(sr*.7),d=new Float32Array(n);
+  for(let i=0;i<n;i++){const t=i/sr;d[i]=Math.min(1,t/.008)*Math.exp(-t*6)*(Math.sin(2*Math.PI*988*t)+.25*Math.sin(4*Math.PI*988*t));}
+  return norm(d,.55);
+}
+function shiftSound(vol){const b=custom.shift||defBuf.shift;if(b)playBuf(b,vol||1);}
 function makeDefaults(){
-  defRaw.open=genWhoosh(true);defRaw.close=genWhoosh(false);defRaw.ann=genChime();
+  defRaw.open=genWhoosh(true);defRaw.close=genWhoosh(false);defRaw.ann=genChime();defRaw.shift=genShift();defRaw.ding=genDing();
   for(const k in defRaw){const b=AC.createBuffer(1,defRaw[k].length,44100);b.getChannelData(0).set(defRaw[k]);defBuf[k]=b;}
 }
 function wavBlob(f,sr){
@@ -609,8 +654,8 @@ function refreshCfg(){
   const box=$('cfgList');box.innerHTML='';
   SLOTS.forEach(([id,name])=>{
     const row=document.createElement('div');row.className='cr';
-    const dk=id==='ann'?'ann':/Open$/.test(id)?'open':/Close$/.test(id)?'close':null;
-    const dn=dk==='ann'?'announce_chime.wav':dk==='open'?'door_open.wav':dk==='close'?'door_close.wav':null;
+    const dk=id==='shift'?'shift':id==='ann'?'ann':/Open$/.test(id)?'open':/Close$/.test(id)?'close':null;
+    const dn=dk==='shift'?'shift_select.wav':dk==='ann'?'announce_chime.wav':dk==='open'?'door_open.wav':dk==='close'?'door_close.wav':null;
     const st=custom[id]?'設定済み：'+meta[id]+'（'+custom[id].duration.toFixed(1)+'秒）':dn?'初期音：'+dn+'（内蔵）':'初期音（始動時に自動生成）';
     row.innerHTML='<b>'+name+'</b><small>'+st+'</small>';
     const inp=document.createElement('input');inp.type='file';inp.addEventListener('click',()=>unlock());
@@ -624,7 +669,7 @@ function refreshCfg(){
       refreshCfg();
     };
     const t=document.createElement('button');t.textContent='▶ 試聴';
-    t.onclick=()=>{unlock();const m=/^door([FR])(Open|Close)$/.exec(id);m?doorSound(m[1],m[2]==='Open'):id==='ann'?playAnn(true):engStartSound(custom.engStart);};
+    t.onclick=()=>{unlock();const m=/^door([FR])(Open|Close)$/.exec(id);m?doorSound(m[1],m[2]==='Open'):id==='ann'?playAnn(true):id==='shift'?shiftSound():engStartSound(custom.engStart);};
     const r=document.createElement('button');r.textContent='初期に戻す';
     r.onclick=async()=>{delete custom[id];delete meta[id];try{await dbOp('readwrite',s=>s.delete(pk(id)));if(preset===1)await dbOp('readwrite',s=>s.delete(id));}catch(e){}refreshCfg();};
     const w=document.createElement('div');w.className='cb2';w.append(inp,t,r);
@@ -662,7 +707,134 @@ function toggleSt2(){
   toast(start2?(trans==='at'?'2速発進 ON（Dで2速から発進）':'2速発進 ON（MT：2速発進アシスト）'):'2速発進 OFF');
 }
 
-updPreTxt();setVeh('at');engineOn=false;rpm=0;applyMode();applyView();requestAnimationFrame(tick);
+// ===== 音声合成装置（路線・停留所・放送） =====
+let CA=null,seqTok=0;const stopBuf={};
+const uid=()=>Math.random().toString(36).slice(2,8),wait=ms=>new Promise(r=>setTimeout(r,ms));
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function caDefault(){return{ri:0,ai:0,auto:true,departed:false,routes:[
+  {id:'r1',name:'路線1',title:'サンプル路線',stops:[
+    {id:'s1',name:'渋谷駅前',yomi:'しぶやえきまえ',ann:''},{id:'s2',name:'宮益坂上',yomi:'みやますざかうえ',ann:''},
+    {id:'s3',name:'青山学院前',yomi:'あおやまがくいんまえ',ann:''},{id:'s4',name:'表参道',yomi:'おもてさんどう',ann:''}]},
+  {id:'r2',name:'路線2',title:'',stops:[{id:'s1',name:'始発',yomi:'',ann:''},{id:'s2',name:'終点',yomi:'',ann:''}]}]};}
+function caLoad(){try{CA=JSON.parse(localStorage.getItem('busCA'));}catch(e){}if(!CA||!CA.routes||!CA.routes.length)CA=caDefault();}
+function caSave(){try{localStorage.setItem('busCA',JSON.stringify(CA));}catch(e){}}
+const caR=()=>CA.routes[Math.min(CA.ri,CA.routes.length-1)];
+const say=s=>(s.yomi&&s.yomi.trim())||s.name;
+const nextText=s=>s.ann&&s.ann.trim()?s.ann:'次は、'+say(s)+'、'+say(s)+'です。';
+function speak(text){return new Promise(res=>{
+  if(!('speechSynthesis' in window)||!text)return res();
+  try{const u=new SpeechSynthesisUtterance(text);u.lang='ja-JP';u.rate=.95;let d=false;const f=()=>{if(!d){d=true;res();}};u.onend=f;u.onerror=f;setTimeout(f,15000);speechSynthesis.speak(u);}catch(e){res();}
+});}
+async function runSeq(items){
+  const tok=++seqTok;
+  try{if('speechSynthesis' in window)speechSynthesis.cancel();}catch(e){}
+  await wait(60);
+  for(const it of items){
+    if(tok!==seqTok||!soundOn)return;
+    if(it.t==='buf'){playBuf(it.b);await wait(Math.max(300,(it.b.duration||1)*1000+250));}
+    else if(it.t==='tts')await speak(it.s);
+  }
+}
+function stopSeq(){seqTok++;try{if('speechSynthesis' in window)speechSynthesis.cancel();}catch(e){}}
+function depItems(){
+  const c=annCfg(),it=[];
+  if(custom.ann)it.push({t:'buf',b:custom.ann});
+  else{if(defBuf.ann)it.push({t:'buf',b:defBuf.ann});if(c.text)it.push({t:'tts',s:c.text});}
+  return it;
+}
+function stopItems(s,r){
+  const it=[],b=stopBuf[r.id+':'+s.id];
+  if(defBuf.ding)it.push({t:'buf',b:defBuf.ding});
+  if(b)it.push({t:'buf',b});else it.push({t:'tts',s:nextText(s)});
+  return it;
+}
+function caArrive(){
+  const r=caR();CA.departed=false;if(CA.ai<r.stops.length-1)CA.ai++;
+  const s=r.stops[CA.ai];caSave();caUpdate();
+  if(CA.ai===r.stops.length-1&&r.stops.length>1)runSeq([{t:'tts',s:'終点、'+say(s)+'です。ご乗車ありがとうございました。'}]);
+}
+function caUpdate(){
+  if(!CA)return;const r=caR();CA.ai=Math.max(0,Math.min(CA.ai,r.stops.length-1));
+  const at=r.stops[CA.ai],nx=r.stops[CA.ai+1];
+  $('lcdmini').textContent='📟 '+r.name+'　'+(nx?'次は '+nx.name:'終点 '+at.name);
+  $('lcd1').textContent='['+r.name+'] '+(r.title||'');
+  $('lcd2').textContent='現在　'+at.name+'　('+(CA.ai+1)+'/'+r.stops.length+')';
+  $('lcd3').textContent=nx?'次は ▶ '+nx.name:'── 終点 ──';
+  document.querySelector('[data-c=auto] .led').classList.toggle('on',CA.auto);
+}
+const CAACT={
+  rp:()=>{CA.ri=(CA.ri+CA.routes.length-1)%CA.routes.length;CA.ai=0;CA.departed=false;},
+  rn:()=>{CA.ri=(CA.ri+1)%CA.routes.length;CA.ai=0;CA.departed=false;},
+  sp:()=>{CA.ai=Math.max(0,CA.ai-1);},
+  sn:()=>{CA.ai=Math.min(caR().stops.length-1,CA.ai+1);},
+  play:()=>{const r=caR(),nx=r.stops[CA.ai+1];if(!nx)return toast('次の停留所がありません（終点）');runSeq(stopItems(nx,r));},
+  stop:()=>stopSeq(),
+  auto:()=>{CA.auto=!CA.auto;toast('自動放送 '+(CA.auto?'ON（発車後に次停留所を放送）':'OFF'));},
+  edit:()=>openCAEd()
+};
+document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{unlock();const f=CAACT[b.dataset.c];if(f)f();caSave();caUpdate();});
+function openCA(){caUpdate();$('ca').style.display='flex';}
+$('caClose').onclick=()=>$('ca').style.display='none';
+$('ca').addEventListener('click',e=>{if(e.target.id==='ca')$('ca').style.display='none';});
+async function loadStopAudio(){
+  if(!AC)return;
+  for(const r of CA.routes)for(const s of r.stops){
+    const k=r.id+':'+s.id;if(stopBuf[k])continue;
+    try{const x=await dbOp('readonly',st=>st.get('stop:'+k));if(x)stopBuf[k]=await decodeAny(x.data,{name:x.name,type:''});}catch(e){}
+  }
+}
+// --- 編集画面 ---
+function openCAEd(){renderEd();$('caEd').style.display='flex';}
+$('caEdClose').onclick=()=>{$('caEd').style.display='none';caSave();caUpdate();};
+function renderEd(){
+  const r=caR();
+  let h='<div class="erow"><select id="edR">'+CA.routes.map((x,i)=>'<option value="'+i+'"'+(i===CA.ri?' selected':'')+'>'+esc(x.name)+'</option>').join('')+'</select><button data-e="addR">＋路線を追加</button><button data-e="delR">この路線を削除</button></div>';
+  h+='<div class="erow"><input type="text" data-f="rname" value="'+esc(r.name)+'" placeholder="路線名（例：路線1）" style="flex:1"><input type="text" data-f="rtitle" value="'+esc(r.title||'')+'" placeholder="行先・系統名" style="flex:2"></div>';
+  r.stops.forEach((s,i)=>{
+    const has=stopBuf[r.id+':'+s.id];
+    h+='<div class="srow" data-i="'+i+'"><div class="erow"><b>'+(i+1)+'</b><input type="text" data-f="name" value="'+esc(s.name)+'" placeholder="停留所名" style="flex:1"><button data-e="up">↑</button><button data-e="down">↓</button><button data-e="del">削除</button></div>'
+      +'<input class="f" type="text" data-f="yomi" value="'+esc(s.yomi||'')+'" placeholder="読み（ひらがな・音声合成用／任意）">'
+      +'<input class="f" type="text" data-f="ann" value="'+esc(s.ann||'')+'" placeholder="放送文（空欄＝「次は、○○、○○です。」）">'
+      +'<div class="erow"><input type="file" data-f="file"><button data-e="test">▶ 放送を試聴</button>'+(has?'<button data-e="clr">音声を外す</button><small>音声ファイル設定済み</small>':'')+'</div></div>';
+  });
+  h+='<div class="erow"><button data-e="addS">＋停留所を追加</button></div>';
+  $('caEdBody').innerHTML=h;
+}
+$('caEdBody').addEventListener('input',e=>{
+  const f=e.target.dataset.f;if(!f||f==='file')return;const r=caR();
+  if(f==='rname')r.name=e.target.value;else if(f==='rtitle')r.title=e.target.value;
+  else{const row=e.target.closest('.srow');if(row)r.stops[+row.dataset.i][f]=e.target.value;}
+  caSave();caUpdate();
+});
+$('caEdBody').addEventListener('change',async e=>{
+  const t=e.target;
+  if(t.id==='edR'){CA.ri=+t.value;CA.ai=0;CA.departed=false;caSave();renderEd();caUpdate();return;}
+  if(t.dataset.f==='file'){
+    const f=t.files[0];if(!f)return;unlock();
+    if(f.size>15e6)return toast('15MB以下のファイルにしてください');
+    const row=t.closest('.srow'),r=caR(),s=r.stops[+row.dataset.i];
+    try{const data=await readBuf(f),b=await decodeAny(data,f),k=r.id+':'+s.id;stopBuf[k]=b;
+      try{await dbOp('readwrite',st=>st.put({name:f.name,data},'stop:'+k));}catch(e2){}
+      toast('「'+s.name+'」の放送音声を設定しました');
+    }catch(err){toast('読み込めませんでした：'+((err&&(err.name||err.message))||'形式エラー'));}
+    renderEd();
+  }
+});
+$('caEdBody').addEventListener('click',async e=>{
+  const a=e.target.dataset.e;if(!a)return;
+  const r=caR(),row=e.target.closest('.srow'),i=row?+row.dataset.i:-1;
+  if(a==='addR'){CA.routes.push({id:uid(),name:'路線'+(CA.routes.length+1),title:'',stops:[{id:uid(),name:'停留所1',yomi:'',ann:''}]});CA.ri=CA.routes.length-1;CA.ai=0;}
+  else if(a==='delR'){if(CA.routes.length<2)return toast('路線は最低1つ必要です');if(!confirm('「'+r.name+'」を削除しますか？'))return;CA.routes.splice(CA.ri,1);CA.ri=0;CA.ai=0;}
+  else if(a==='addS')r.stops.push({id:uid(),name:'停留所'+(r.stops.length+1),yomi:'',ann:''});
+  else if(a==='del'){if(r.stops.length<2)return toast('停留所は最低1つ必要です');const x=r.stops.splice(i,1)[0];delete stopBuf[r.id+':'+x.id];try{await dbOp('readwrite',st=>st.delete('stop:'+r.id+':'+x.id));}catch(e2){}}
+  else if(a==='up'&&i>0){const t=r.stops[i-1];r.stops[i-1]=r.stops[i];r.stops[i]=t;}
+  else if(a==='down'&&i<r.stops.length-1){const t=r.stops[i+1];r.stops[i+1]=r.stops[i];r.stops[i]=t;}
+  else if(a==='test'){unlock();runSeq(stopItems(r.stops[i],r));return;}
+  else if(a==='clr'){const k=r.id+':'+r.stops[i].id;delete stopBuf[k];try{await dbOp('readwrite',st=>st.delete('stop:'+k));}catch(e2){}}
+  caSave();renderEd();caUpdate();
+});
+
+caLoad();caUpdate();updPreTxt();setVeh('at');engineOn=false;rpm=0;applyMode();applyView();requestAnimationFrame(tick);
 </script>
 </body>
 </html>
