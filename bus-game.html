@@ -88,24 +88,62 @@ body.lampL [data-s=sigL],body.lampR [data-s=sigR],body.lampL.lampR [data-s=haz]{
 #shift [data-s=st2]{font-size:14px;min-width:72px;flex:1 1 100%}
 #tabs{display:flex;gap:6px;margin:8px 0}#tabs button{flex:1;padding:8px 0;font-size:16px;background:#345}#tabs button.on{background:#e8412c}
 .cr label{font-size:13px;display:block;margin-top:6px}.cr .tx{width:100%;box-sizing:border-box;font-size:14px;padding:6px;margin-top:6px}
-#lcdmini{align-self:flex-start;max-width:100%;box-sizing:border-box;background:#07140b;color:#7dff9a;font:600 12px/1.3 ui-monospace,Menlo,monospace;padding:5px 9px;border-radius:8px;border:1px solid #2a4;text-shadow:0 0 5px #2f8;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#ca,#caEd{position:fixed;z-index:1500;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center}
-#caBox{width:min(96vw,520px);background:linear-gradient(#3b3f45,#202327);border:2px solid #70757d;border-radius:14px;padding:12px;color:#ddd;box-shadow:0 10px 30px #000}
-.caHead{display:flex;align-items:center;gap:8px;margin-bottom:8px}.caHead b{font-size:15px;letter-spacing:.1em}.caHead span{font-size:10px;opacity:.6;flex:1}
-.caHead button{padding:4px 10px;background:#555}
-#lcd{background:#06120a;color:#7dff9a;font-family:ui-monospace,Menlo,monospace;border:3px solid #111;border-radius:6px;padding:8px 10px;text-shadow:0 0 6px #2f8;min-height:76px;box-shadow:inset 0 0 14px #000}
+#dock{position:fixed;z-index:1000;width:172px;background:linear-gradient(160deg,rgba(20,38,74,.93),rgba(10,18,38,.93));border:2px solid #3fa7ff;border-radius:14px;color:#e6f0ff;box-shadow:0 0 16px rgba(63,167,255,.35);touch-action:none}
+#dkHead{display:flex;align-items:center;gap:6px;padding:6px 6px 6px 8px;cursor:grab;touch-action:none}
+#dkBadge{flex:0 0 auto;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;background:var(--rc,#3a6fd8);box-shadow:0 0 8px var(--rc,#3a6fd8)}
+#dkRoute{flex:1;min-width:0;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#dkHead button{flex:0 0 auto;padding:4px 7px;font-size:11px;font-weight:800;border-radius:8px;background:#26437a;border-bottom:2px solid #14285c}
+#dkAuto.on{background:linear-gradient(#37d67a,#1b8f4a);border-bottom-color:#0d5a2d}
+#dkBody{padding:0 8px 8px}#dock.col #dkBody{display:none}
+.dkLbl{font-size:9px;letter-spacing:.22em;color:#4fe3ff}
+#dkNext{font-size:19px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 0 8px rgba(79,227,255,.6)}
+#dkLine{display:flex;align-items:center;margin:7px 0 8px;min-height:14px}
+#dkLine i{flex:1 1 0;min-width:4px;height:3px;background:#2b4a85}#dkLine i.done{background:#4fe3ff}
+#dkLine b{flex:0 0 auto;width:9px;height:9px;border-radius:50%;background:#2b4a85;border:2px solid #14264a;box-sizing:content-box}
+#dkLine b.done{background:#4fe3ff}#dkLine b.cur{background:#ffb347;box-shadow:0 0 8px #ff9a3c;width:12px;height:12px}
+#dkLine b.nx{background:#14264a;border-color:#4fe3ff;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.dkBtns{display:flex;gap:5px}
+.dkBtns button{flex:1;padding:8px 0;font-size:13px;font-weight:800;border-radius:9px;background:linear-gradient(#3a6fd8,#2347a0);border-bottom:3px solid #14285c}
+.dkBtns .go{flex:2;background:linear-gradient(#ff9a3c,#d9540f);border-bottom-color:#8a300a}
+.dkBtns button:active,#dkHead button:active{transform:translateY(2px);border-bottom-width:1px}
+#eq{display:none;height:12px;gap:2px;margin-top:6px;align-items:flex-end}body.talk #eq{display:flex}
+#eq i{flex:1;height:3px;background:#4fe3ff;animation:eq .6s infinite ease-in-out}
+#eq i:nth-child(2){animation-delay:.12s}#eq i:nth-child(3){animation-delay:.24s}#eq i:nth-child(4){animation-delay:.36s}#eq i:nth-child(5){animation-delay:.48s}
+@keyframes eq{0%,100%{height:3px}50%{height:12px}}
+#banner{position:fixed;z-index:1200;left:50%;top:calc(env(safe-area-inset-top,0px) + 150px);transform:translateX(-50%);background:linear-gradient(90deg,#0a1226,#14264a);border:2px solid #4fe3ff;border-radius:14px;padding:8px 20px;color:#fff;text-align:center;opacity:0;pointer-events:none;box-shadow:0 0 18px rgba(79,227,255,.5);max-width:84vw}
+#banner.show{animation:bn 3.2s forwards}
+@keyframes bn{0%{opacity:0;transform:translateX(-50%) translateY(-20px)}10%,80%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(-10px)}}
+#banner small{display:block;font-size:10px;letter-spacing:.25em;color:#4fe3ff}#banner b{font-size:20px}
+#ca,#caEd{position:fixed;z-index:1500;inset:0;background:rgba(3,8,20,.6);display:none;align-items:center;justify-content:center}
+#caBox{width:min(96vw,540px);background:linear-gradient(160deg,#14264a,#0a1226);border:2px solid #3fa7ff;border-radius:18px;padding:14px;color:#e6f0ff;box-shadow:0 0 28px rgba(63,167,255,.35),inset 0 0 40px rgba(63,167,255,.08)}
+.caHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.ttl{font-weight:800;letter-spacing:.12em;font-size:15px;text-shadow:0 0 8px #3fa7ff}
+.caHead button{padding:4px 12px;background:#26437a;border-radius:20px}
+#caRoutes{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+#caRoutes button{padding:6px 14px;border-radius:20px;font-weight:700;font-size:13px;color:#fff;border:2px solid transparent;background:#1c2f57;opacity:.7}
+#caRoutes button.on{opacity:1;border-color:#fff;box-shadow:0 0 12px #fff}
+#caMap{display:flex;gap:6px;overflow-x:auto;padding:6px 2px 10px;touch-action:pan-x;-webkit-overflow-scrolling:touch}
+#caMap button{flex:0 0 auto;padding:8px 12px;border-radius:12px;font-size:13px;background:#1a2c52;border:2px solid #2b4a85;color:#cfe0ff}
+#caMap button.done{opacity:.5}
+#caMap button.cur{background:#b8581a;border-color:#ffb347;color:#fff;box-shadow:0 0 14px #ff9a3c}
+#caMap button.nx{border-color:#4fe3ff;box-shadow:0 0 10px #4fe3ff;animation:pulse 1.2s infinite}
+#lcd{background:#051019;color:#7dff9a;font-family:ui-monospace,Menlo,monospace;border:2px solid #1e5f4a;border-radius:10px;padding:8px 10px;text-shadow:0 0 6px #2f8;min-height:76px;box-shadow:inset 0 0 14px #000}
 #lcd div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.l1{font-size:12px;opacity:.8}.l2{font-size:14px;margin-top:2px}.l3{font-size:20px;font-weight:700;margin-top:4px}
-.caBtns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
-.caBtns button{padding:12px 4px;font-size:13px;background:linear-gradient(#5a5f67,#3a3e44);border:1px solid #8a8f98;border-bottom:3px solid #1b1d20;border-radius:8px;color:#eee;touch-action:manipulation}
-.caBtns button:active{transform:translateY(2px);border-bottom-width:1px}
-.caBtns .big{background:linear-gradient(#d9772c,#a8480f);grid-column:span 2;font-size:16px;font-weight:700}
-.led{display:inline-block;width:8px;height:8px;border-radius:50%;background:#333;margin-right:5px;vertical-align:middle}.led.on{background:#3f6;box-shadow:0 0 6px #3f6}
-#caEdBox{background:#fff;color:#222;border-radius:14px;padding:14px;width:min(96vw,560px);max-height:90vh;overflow:auto;touch-action:pan-y;-webkit-user-select:text;user-select:text}
+.caBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.caBtns button{padding:14px 4px;font-size:14px;font-weight:700;border-radius:14px;color:#fff;background:linear-gradient(#3a6fd8,#2347a0);border:0;border-bottom:4px solid #14285c;touch-action:manipulation}
+.caBtns button:active{transform:translateY(3px);border-bottom-width:1px}
+.caBtns .play{background:linear-gradient(#ff9a3c,#d9540f);border-bottom-color:#8a300a;grid-column:span 2;font-size:16px}
+.caBtns .stop{background:linear-gradient(#e0475a,#a8202f);border-bottom-color:#5e1019}
+.caBtns .wide{grid-column:span 3;background:linear-gradient(#2a3b66,#1a2748);border-bottom-color:#0d1530}
+.led{display:inline-block;width:9px;height:9px;border-radius:50%;background:#333;margin-right:6px;vertical-align:middle}.led.on{background:#3f6;box-shadow:0 0 8px #3f6}
+#caEdBox small{color:#7fd6ff}
+#caEdBox{background:linear-gradient(160deg,#14264a,#0a1226);color:#e6f0ff;border:2px solid #3fa7ff;box-shadow:0 0 24px rgba(63,167,255,.35);border-radius:16px;padding:14px;width:min(96vw,560px);max-height:90vh;overflow:auto;touch-action:pan-y;-webkit-user-select:text;user-select:text}
 #caEdBox h2{margin:0 0 8px;font-size:17px}
-#caEdBox input[type=text],#caEdBox select{font-size:15px;padding:6px;border:1px solid #bbb;border-radius:6px;box-sizing:border-box;min-width:0}
+#caEdBox input[type=text],#caEdBox select{font-size:15px;padding:6px;background:#0d1a33;color:#e6f0ff;border:1px solid #2f5a99;border-radius:8px;box-sizing:border-box;min-width:0}
 .erow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0}
-.srow{border:1px solid #ddd;border-radius:10px;padding:8px;margin:8px 0;background:#f7f8fa}.srow .f{width:100%;margin-top:4px}
-.srow button,.erow button{padding:6px 10px;font-size:13px;background:#345}
+.srow{border:1px solid #2f5a99;border-radius:12px;padding:8px;margin:8px 0;background:rgba(20,38,74,.6)}.srow .f{width:100%;margin-top:4px}
+.srow button,.erow button{padding:6px 10px;font-size:13px;background:#1f4fa0;border-radius:8px}
 #cfg{position:fixed;z-index:1500;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
 #cfgBox{background:#fff;color:#222;border-radius:14px;padding:16px;width:min(92vw,440px);max-height:86vh;overflow:auto;touch-action:pan-y;-webkit-user-select:text;user-select:text}
 #cfgBox h2{margin:0 0 6px;font-size:18px}#cfgBox p{margin:0 0 10px;font-size:12px;color:#555;line-height:1.5}
@@ -131,7 +169,7 @@ body.lampL [data-s=sigL],body.lampR [data-s=sigR],body.lampL.lampR [data-s=haz]{
   <div id="ctl">
     <button data-s="doorF">前ドア閉</button><button data-s="doorR">後ドア閉</button><button data-s="view">🎥</button><button data-s="trans">AT</button><button data-s="pre">♪1</button><button data-s="cfg">⚙</button>
   </div>
-  <div id="lcdmini" data-s="ca">📟</div><div id="hint"></div>
+  <div id="hint"></div>
 </div>
 <div id="side">
   <button data-s="mode">📱</button><button data-s="veh">🚌</button><button data-s="eng">🔑</button>
@@ -154,19 +192,25 @@ body.lampL [data-s=sigL],body.lampR [data-s=sigR],body.lampL.lampR [data-s=haz]{
 </div>
 <div id="sig"><button data-s="pb">🅿</button><button data-s="sigL">◀</button><button data-s="haz">⚠</button><button data-s="sigR">▶</button></div>
 <div id="cfg"><div id="cfgBox"><h2>⚙ 効果音のカスタマイズ</h2><p>お好きな音声ファイル（mp3 / wav / m4a など、15MBまで）を選ぶと効果音を差し替えられます。iPhone / iPad では「ファイル」アプリ内のファイルを選んでください（ミュージックアプリの曲は選べません）。1〜4のサウンドセットに別々に保存でき、上部の「♪」ボタンでも切り替えられます。ファイルはこの端末のブラウザ内にだけ保存され、アップロードはされません。</p><div id="tabs"></div><div id="cfgList"></div><button id="cfgClose" style="margin-top:10px;width:100%">閉じる</button></div></div>
+<div id="dock"><div id="dkHead"><span id="dkBadge">1</span><span id="dkRoute">路線1</span><button id="dkAuto" data-s="caAuto">自動</button><button data-s="ca">⚙</button></div>
+  <div id="dkBody"><div class="dkLbl">NEXT STOP</div><div id="dkNext">-</div><div id="dkLine"></div>
+  <div class="dkBtns"><button data-s="caSp">◀</button><button class="go" data-s="caPlay">▶ 放送</button><button data-s="caSn">▶</button></div>
+  <div id="eq"><i></i><i></i><i></i><i></i><i></i></div></div></div>
+<div id="banner"><small id="bnS"></small><b id="bnT"></b></div>
 <div id="ca"><div id="caBox">
-  <div class="caHead"><b>音声合成装置</b><span>BUS ANNOUNCER</span><button id="caClose">✕</button></div>
+  <div class="caHead"><span class="ttl">📟 音声合成装置</span><button id="caClose">✕</button></div>
+  <div id="caRoutes"></div><div id="caMap"></div>
   <div id="lcd"><div class="l1" id="lcd1"></div><div class="l2" id="lcd2"></div><div class="l3" id="lcd3"></div></div>
   <div class="caBtns">
-    <button data-c="rp">◀ 路線</button><button data-c="rn">路線 ▶</button><button data-c="sp">◀ 停留所</button><button data-c="sn">停留所 ▶</button>
-    <button data-c="play" class="big">▶ 次停留所の放送</button><button data-c="stop">■ 停止</button><button data-c="auto"><i class="led"></i>自動</button>
-    <button data-c="edit" style="grid-column:span 4">✎ 路線・停留所・放送を編集</button>
+    <button data-c="sp">⏮ 前へ</button><button data-c="auto"><i class="led"></i>自動</button><button data-c="sn">次へ ⏭</button>
+    <button data-c="play" class="play">▶ 次の停留所を放送</button><button data-c="stop" class="stop">■ 停止</button>
+    <button data-c="edit" class="wide">✎ 路線・停留所・放送を編集</button>
   </div></div></div>
-<div id="caEd"><div id="caEdBox"><h2>✎ 路線・停留所の編集</h2><p style="margin:0 0 6px;font-size:12px;color:#555">停留所ごとに「読み」「放送文」「放送音声ファイル」を設定できます。音声ファイルがあればそれを、なければ音声合成で読み上げます。入力は自動で保存されます。</p><div id="caEdBody"></div><button id="caEdClose" style="margin-top:8px;width:100%">閉じる</button></div></div>
+<div id="caEd"><div id="caEdBox"><h2>✎ 路線・停留所の編集</h2><p style="margin:0 0 6px;font-size:12px;color:#9db6dd">停留所ごとに「読み」「放送文」「放送音声ファイル」を設定できます。音声ファイルがあればそれを、なければ音声合成で読み上げます。入力は自動で保存されます。</p><div id="caEdBody"></div><button id="caEdClose" style="margin-top:8px;width:100%">閉じる</button></div></div>
 <div id="toast"></div>
 <div id="splash"><h1>🚌 バス運転ゲーム</h1>
   <p>ボタンを押すとエンジン音が有効になります。<br>iPhone / iPad は本体のマナーモード（サイレントスイッチ）を解除してください。</p>
-  <button id="go">スタート</button><p style="font-size:11px;opacity:.5">v9 高速バス・エルガ風シフト音・音声合成装置</p></div>
+  <button id="go">スタート</button><p style="font-size:11px;opacity:.5">v10 音声合成装置を常時表示・ゲーム風UI</p></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -282,7 +326,7 @@ function toggleDoor(k){
 const ACT={R:()=>setSel('R'),N:()=>setSel('N'),D:()=>setSel('D'),su:()=>shift(1),sd:()=>shift(-1),
   sigL:()=>setSig(-1),sigR:()=>setSig(1),haz:()=>setSig(2),doorF:()=>toggleDoor('F'),doorR:()=>toggleDoor('R'),
   view:()=>{vi=(vi+1)%VIEWS.length;applyView();toast('視点：'+VIEWS[vi].n);},
-  veh:()=>{const o=['at','mt','hw'];setVeh(o[(o.indexOf(cur)+1)%3]);},eng:toggleEngine,pb:togglePB,cfg:openCfg,pre:()=>cyclePreset(),ca:()=>openCA(),trans:()=>setTrans(trans==='at'?'mt':'at'),st2:()=>toggleSt2(),
+  veh:()=>{const o=['at','mt','hw'];setVeh(o[(o.indexOf(cur)+1)%3]);},eng:toggleEngine,pb:togglePB,cfg:openCfg,pre:()=>cyclePreset(),ca:()=>openCA(),caSp:()=>caDo('sp'),caSn:()=>caDo('sn'),caPlay:()=>caDo('play'),caAuto:()=>caDo('auto'),trans:()=>setTrans(trans==='at'?'mt':'at'),st2:()=>toggleSt2(),
   snd:()=>{soundOn=!soundOn;$('snd').textContent=soundOn?'🔊':'🔇';},
   zi:()=>setZoom(zoom+1),zo:()=>setZoom(zoom-1),
   mode:()=>{mode=mode==='touch'?'pc':'touch';applyMode();toast(mode==='touch'?'タッチ操作モード':'キーボード操作モード');}};
@@ -591,7 +635,7 @@ function playAnn(force){
   const c=annCfg();if(!soundOn)return;
   let items=[];
   if(c.on||force)items=depItems();
-  if(!force&&CA.auto){const r=caR(),nx=r.stops[CA.ai+1];if(nx)items=items.concat(stopItems(nx,r));CA.departed=true;caSave();caUpdate();}
+  if(!force&&CA.auto){const r=caR(),nx=r.stops[CA.ai+1];if(nx){items=items.concat(stopItems(nx,r));banner('発車 ▶ NEXT STOP','次は '+nx.name);}CA.departed=true;caSave();caUpdate();}
   if(items.length)runSeq(items);
 }
 // --- 初期音（内蔵の音声ファイル相当。WAVとして書き出し可能） ---
@@ -726,16 +770,18 @@ function speak(text){return new Promise(res=>{
   try{const u=new SpeechSynthesisUtterance(text);u.lang='ja-JP';u.rate=.95;let d=false;const f=()=>{if(!d){d=true;res();}};u.onend=f;u.onerror=f;setTimeout(f,15000);speechSynthesis.speak(u);}catch(e){res();}
 });}
 async function runSeq(items){
-  const tok=++seqTok;
+  const tok=++seqTok;setTalk(true);
   try{if('speechSynthesis' in window)speechSynthesis.cancel();}catch(e){}
   await wait(60);
   for(const it of items){
-    if(tok!==seqTok||!soundOn)return;
+    if(tok!==seqTok)return;
+    if(!soundOn)break;
     if(it.t==='buf'){playBuf(it.b);await wait(Math.max(300,(it.b.duration||1)*1000+250));}
     else if(it.t==='tts')await speak(it.s);
   }
+  if(tok===seqTok)setTalk(false);
 }
-function stopSeq(){seqTok++;try{if('speechSynthesis' in window)speechSynthesis.cancel();}catch(e){}}
+function stopSeq(){seqTok++;setTalk(false);try{if('speechSynthesis' in window)speechSynthesis.cancel();}catch(e){}}
 function depItems(){
   const c=annCfg(),it=[];
   if(custom.ann)it.push({t:'buf',b:custom.ann});
@@ -750,29 +796,49 @@ function stopItems(s,r){
 }
 function caArrive(){
   const r=caR();CA.departed=false;if(CA.ai<r.stops.length-1)CA.ai++;
-  const s=r.stops[CA.ai];caSave();caUpdate();
+  const s=r.stops[CA.ai];banner(CA.ai===r.stops.length-1?'TERMINAL':'ARRIVED','🚏 '+s.name);caSave();caUpdate();
   if(CA.ai===r.stops.length-1&&r.stops.length>1)runSeq([{t:'tts',s:'終点、'+say(s)+'です。ご乗車ありがとうございました。'}]);
 }
+const rcol=i=>'hsl('+((i*67+205)%360)+' 75% 52%)';
+function setTalk(on){document.body.classList.toggle('talk',on);}
+function banner(sub,title){const b=$('banner');$('bnS').textContent=sub;$('bnT').textContent=title;b.classList.remove('show');void b.offsetWidth;b.classList.add('show');}
+function caDo(k){unlock();blip(true);const f=CAACT[k];if(f)f();caSave();caUpdate();}
 function caUpdate(){
-  if(!CA)return;const r=caR();CA.ai=Math.max(0,Math.min(CA.ai,r.stops.length-1));
-  const at=r.stops[CA.ai],nx=r.stops[CA.ai+1];
-  $('lcdmini').textContent='📟 '+r.name+'　'+(nx?'次は '+nx.name:'終点 '+at.name);
-  $('lcd1').textContent='['+r.name+'] '+(r.title||'');
-  $('lcd2').textContent='現在　'+at.name+'　('+(CA.ai+1)+'/'+r.stops.length+')';
-  $('lcd3').textContent=nx?'次は ▶ '+nx.name:'── 終点 ──';
+  if(!CA)return;const r=caR(),n=r.stops.length;CA.ai=Math.max(0,Math.min(CA.ai,n-1));
+  const at=r.stops[CA.ai],nx=r.stops[CA.ai+1],dk=$('dock');
+  dk.style.setProperty('--rc',rcol(CA.ri));
+  $('dkBadge').textContent=CA.ri+1;
+  $('dkRoute').textContent=dk.classList.contains('col')?(nx?'次 '+nx.name:'終点 '+at.name):r.name+(r.title?' '+r.title:'');
+  $('dkNext').textContent=nx?nx.name:'終点 '+at.name;
+  document.querySelector('.dkLbl').textContent=nx?'NEXT STOP':'TERMINAL';
+  const st=Math.max(0,Math.min(CA.ai-2,n-7)),en=Math.min(n,st+7);let h='';
+  for(let i=st;i<en;i++){h+=(i>st?'<i class="'+(i<=CA.ai?'done':'')+'"></i>':'')+'<b class="'+(i<CA.ai?'done':i===CA.ai?'cur':i===CA.ai+1?'nx':'')+'"></b>';}
+  $('dkLine').innerHTML=h;
+  $('dkAuto').classList.toggle('on',CA.auto);
   document.querySelector('[data-c=auto] .led').classList.toggle('on',CA.auto);
+  if($('ca').style.display!=='flex')return;
+  $('lcd1').textContent='['+r.name+'] '+(r.title||'');
+  $('lcd2').textContent='現在　'+at.name+'　('+(CA.ai+1)+'/'+n+')';
+  $('lcd3').textContent=nx?'次は ▶ '+nx.name:'── 終点 ──';
+  const rb=$('caRoutes');rb.innerHTML='';
+  CA.routes.forEach((x,i)=>{const b=document.createElement('button');b.textContent=(i+1)+' '+x.name;if(i===CA.ri){b.className='on';b.style.background=rcol(i);}
+    b.onclick=()=>{blip(true);CA.ri=i;CA.ai=0;CA.departed=false;caSave();caUpdate();};rb.append(b);});
+  const mp=$('caMap'),sx=mp.scrollLeft;mp.innerHTML='';
+  r.stops.forEach((x,i)=>{const b=document.createElement('button');b.textContent=(i+1)+'. '+x.name;b.className=i<CA.ai?'done':i===CA.ai?'cur':i===CA.ai+1?'nx':'';
+    b.onclick=()=>{blip(true);CA.ai=i;CA.departed=false;caSave();caUpdate();};mp.append(b);});
+  mp.scrollLeft=sx;
 }
 const CAACT={
   rp:()=>{CA.ri=(CA.ri+CA.routes.length-1)%CA.routes.length;CA.ai=0;CA.departed=false;},
   rn:()=>{CA.ri=(CA.ri+1)%CA.routes.length;CA.ai=0;CA.departed=false;},
   sp:()=>{CA.ai=Math.max(0,CA.ai-1);},
   sn:()=>{CA.ai=Math.min(caR().stops.length-1,CA.ai+1);},
-  play:()=>{const r=caR(),nx=r.stops[CA.ai+1];if(!nx)return toast('次の停留所がありません（終点）');runSeq(stopItems(nx,r));},
+  play:()=>{const r=caR(),nx=r.stops[CA.ai+1];if(!nx)return toast('次の停留所がありません（終点）');banner('NEXT STOP','次は '+nx.name);runSeq(stopItems(nx,r));},
   stop:()=>stopSeq(),
   auto:()=>{CA.auto=!CA.auto;toast('自動放送 '+(CA.auto?'ON（発車後に次停留所を放送）':'OFF'));},
   edit:()=>openCAEd()
 };
-document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{unlock();const f=CAACT[b.dataset.c];if(f)f();caSave();caUpdate();});
+document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>caDo(b.dataset.c));
 function openCA(){caUpdate();$('ca').style.display='flex';}
 $('caClose').onclick=()=>$('ca').style.display='none';
 $('ca').addEventListener('click',e=>{if(e.target.id==='ca')$('ca').style.display='none';});
@@ -834,7 +900,38 @@ $('caEdBody').addEventListener('click',async e=>{
   caSave();renderEd();caUpdate();
 });
 
-caLoad();caUpdate();updPreTxt();setVeh('at');engineOn=false;rpm=0;applyMode();applyView();requestAnimationFrame(tick);
+caLoad();// --- 常時表示ドック（ドラッグで画面の端に移動・タップで折りたたみ） ---
+(function(){
+  const dk=$('dock'),hd=$('dkHead');let d=null,st={side:'l',y:null,col:false};
+  try{Object.assign(st,JSON.parse(localStorage.getItem('busDock')));}catch(e){}
+  function apply(){
+    dk.classList.toggle('col',!!st.col);
+    const y=st.y==null?innerHeight*.4:st.y;
+    dk.style.top=Math.max(70,Math.min(innerHeight-dk.offsetHeight-8,y))+'px';
+    dk.style.left=st.side==='l'?'6px':'auto';dk.style.right=st.side==='r'?'6px':'auto';
+    caUpdate();
+  }
+  const save=()=>{try{localStorage.setItem('busDock',JSON.stringify(st));}catch(e){}};
+  hd.addEventListener('pointerdown',e=>{
+    if(e.target.closest('button'))return;
+    d={x:e.clientX,y:e.clientY,t:dk.offsetTop,l:dk.offsetLeft,m:false};hd.setPointerCapture(e.pointerId);
+  });
+  hd.addEventListener('pointermove',e=>{
+    if(!d)return;const dx=e.clientX-d.x,dy=e.clientY-d.y;
+    if(!d.m&&Math.hypot(dx,dy)>6)d.m=true;
+    if(d.m){dk.style.left=(d.l+dx)+'px';dk.style.right='auto';dk.style.top=(d.t+dy)+'px';}
+  });
+  hd.addEventListener('pointerup',()=>{
+    if(!d)return;
+    if(!d.m)st.col=!st.col;
+    else{st.side=dk.offsetLeft+dk.offsetWidth/2<innerWidth/2?'l':'r';st.y=dk.offsetTop;}
+    d=null;save();apply();
+  });
+  hd.addEventListener('pointercancel',()=>{d=null;apply();});
+  addEventListener('resize',apply);apply();
+})();
+
+caUpdate();updPreTxt();setVeh('at');engineOn=false;rpm=0;applyMode();applyView();requestAnimationFrame(tick);
 </script>
 </body>
 </html>
