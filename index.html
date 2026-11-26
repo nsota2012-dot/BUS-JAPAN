@@ -142,7 +142,8 @@ body.lampL [data-s=sigL],body.lampR [data-s=sigR],body.lampL.lampR [data-s=haz]{
 #caEdBox h2{margin:0 0 8px;font-size:17px}
 #caEdBox input[type=text],#caEdBox select{font-size:15px;padding:6px;background:#0d1a33;color:#e6f0ff;border:1px solid #2f5a99;border-radius:8px;box-sizing:border-box;min-width:0}
 .erow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0}
-.srow{border:1px solid #2f5a99;border-radius:12px;padding:8px;margin:8px 0;background:rgba(20,38,74,.6)}.srow .f{width:100%;margin-top:4px}
+.srow{border:1px solid #2f5a99;border-radius:12px;padding:8px;margin:8px 0;background:rgba(20,38,74,.6)}.srow .fi{display:block;width:100%;margin-top:4px}
+.srow input[type=file]{max-width:100%;font-size:13px;color:#cfe0ff}
 .srow button,.erow button{padding:6px 10px;font-size:13px;background:#1f4fa0;border-radius:8px}
 #cfg{position:fixed;z-index:1500;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
 #cfgBox{background:#fff;color:#222;border-radius:14px;padding:16px;width:min(92vw,440px);max-height:86vh;overflow:auto;touch-action:pan-y;-webkit-user-select:text;user-select:text}
@@ -210,7 +211,7 @@ body.lampL [data-s=sigL],body.lampR [data-s=sigR],body.lampL.lampR [data-s=haz]{
 <div id="toast"></div>
 <div id="splash"><h1>🚌 バス運転ゲーム</h1>
   <p>ボタンを押すとエンジン音が有効になります。<br>iPhone / iPad は本体のマナーモード（サイレントスイッチ）を解除してください。</p>
-  <button id="go">スタート</button><p style="font-size:11px;opacity:.5">v10 音声合成装置を常時表示・ゲーム風UI</p></div>
+  <button id="go">スタート</button><p style="font-size:11px;opacity:.5">v10.1 音声合成装置を常時表示・編集画面の表示修正</p></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -859,8 +860,8 @@ function renderEd(){
   r.stops.forEach((s,i)=>{
     const has=stopBuf[r.id+':'+s.id];
     h+='<div class="srow" data-i="'+i+'"><div class="erow"><b>'+(i+1)+'</b><input type="text" data-f="name" value="'+esc(s.name)+'" placeholder="停留所名" style="flex:1"><button data-e="up">↑</button><button data-e="down">↓</button><button data-e="del">削除</button></div>'
-      +'<input class="f" type="text" data-f="yomi" value="'+esc(s.yomi||'')+'" placeholder="読み（ひらがな・音声合成用／任意）">'
-      +'<input class="f" type="text" data-f="ann" value="'+esc(s.ann||'')+'" placeholder="放送文（空欄＝「次は、○○、○○です。」）">'
+      +'<input class="fi" type="text" data-f="yomi" value="'+esc(s.yomi||'')+'" placeholder="読み（ひらがな・音声合成用／任意）">'
+      +'<input class="fi" type="text" data-f="ann" value="'+esc(s.ann||'')+'" placeholder="放送文（空欄＝「次は、○○、○○です。」）">'
       +'<div class="erow"><input type="file" data-f="file"><button data-e="test">▶ 放送を試聴</button>'+(has?'<button data-e="clr">音声を外す</button><small>音声ファイル設定済み</small>':'')+'</div></div>';
   });
   h+='<div class="erow"><button data-e="addS">＋停留所を追加</button></div>';
